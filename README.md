@@ -15,14 +15,14 @@ Version 0.0.1-pre
 ##Current features:
 1. Global settings holding list of known KSP installation directories
 2. Per KSPDir settings on top of that
+3. Fetch repository data from CKAN
 
 ##Todo:
-1. Fetch repository data from CKAN
-2. List available modules
-3. Install modules (optional override support for manual mods) with optional download-retries
-4. Delete modules
-5. Upgrade modules
-6. PyQT GUI for graphical usage
+1. List available modules
+2. Install modules (optional override support for manual mods) with optional download-retries
+3. Delete modules
+4. Upgrade modules
+5. PyQT GUI for graphical usage
 
 
 
