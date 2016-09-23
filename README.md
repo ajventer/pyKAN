@@ -10,7 +10,7 @@ Version 0.0.1-pre
 ##Installation:
 1. Clone or Download the repository.
 2. Change to the directory where you downloaded
-3. ./pykan --help
+3. `./pyKAN --help`
 
 ##Current features:
 1. Global settings holding list of known KSP installation directories
