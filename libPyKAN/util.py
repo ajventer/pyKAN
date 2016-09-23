@@ -6,7 +6,7 @@ import multiprocessing
 try:
     import requests
 except ImportError:
-    raise ImportError(util.importerrormsg('requests'))
+    raise ImportError("This program requires the python requests module. Please install it using pip or your distro's package manager")
 
 DEBUG=False
 default_ckan_repo = "https://github.com/KSP-CKAN/CKAN-meta/archive/master.tar.gz"
@@ -49,9 +49,6 @@ def download_files(urilist, cachedir, retries):
 
 def is_kspdir(path):
     return os.path.isdir(os.path.join(path,'GameData'))
-
-def importerrormsg(modulename):
-    return "This program requires the python %s module. Please install it using pip, apt or yum" % modulename
 
 def error(message,code=1):
     sys.stderr.write('%s\n' %message)

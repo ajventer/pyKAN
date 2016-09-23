@@ -2,6 +2,7 @@
 from libPyKAN import ckanRepo,pykancfg
 from libPyKAN import util
 import argparse
+from argparse import RawTextHelpFormatter
 import sys
 
 
@@ -14,7 +15,7 @@ if __name__ == '__main__':
 
     def change_setting():
         if options.key == None or options.value == None:
-            util.error("changesetting requires --key and --options")
+            util.error("changesetting requires --key and --value options")
         key = options.key
         if not key in settings.flatsettings():
             foundkey = False
@@ -82,34 +83,48 @@ if __name__ == '__main__':
         list_repos()
 
     def del_repo():
+        if options.repo == 0:
+            util.error('Error: you cannot deactivate the default repository.')
         if not options.repo:
             util.error('You must give a repository index (from list_repos output) to remove a repository')
         if options.repo < 0 or options.repo >= len(repo.available_repo_list()):
             util.error('Invalid repository index %s' % options.repo)
-        uri = repo.available_repo_list()[options.repo]
+        uri = repo.available_repo_list()[options.repo]['uri']
         del(settings.repos()[settings.repos().index(uri)])
+        settings.save()
         list_repos()
 
     def update():
         repo.update_repository_data()
 
-    parser = argparse.ArgumentParser(description = 'Python client for CKAN data')
+    actions = {
+        'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
+        'change_setting': {'method': change_setting,'help':'Change a setting. You must give --key and --value.'},
+        'listkspdirs': {'method': listkspdirs,'help': 'List the KSP installation directories we manage'},
+        'addkspdir': {'method': addkspdir, 'help': 'Adds a new KSP directory to the configuration. --kspdir'},
+        'delkspdir': {'method': delkspdir,'help':'Deletes a KSP directory from the configuration. You must specify --kspdir'},
+        'default_ksp': {'method': defaultksp,'help': 'Changes the default KSP directory used if no --kspdir is specified'},
+        'list_repos': {'method': list_repos,'help': 'List the possible upstream repos and indicates which ones are in use'},
+        'add_repo': {'method': add_repo,'help':'Activate another repository for upstream sources. You must specify --repo'},
+        'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository.'},
+        'update': {'method':update, 'help': 'Update the mod data from the repositories'}
+    }
+
+    parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
     parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
     parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
-    parser.add_argument('action',default='show_settings',choices=['show_settings',
-        'change_setting',
-        'listkspdirs',
-        'addkspdir',
-        'delkspdir',
-        'default_ksp',
-        'list_repos',
-        'add_repo',
-        'del_repo',
-        'update'])
+    parser.add_argument('action',default='show_settings',choices=actions.keys())
     parser.add_argument('--key',type=str,default=None)
     parser.add_argument('--value',type=str,default=None)
     parser.add_argument('--repo',type=int,default=None)
     parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
+
+    parser.epilog = 'Actions:\n' 
+    for i in sorted(actions.keys()):
+        parser.epilog = '%s\n*%s:  %s\n' %(parser.epilog,i,actions[i]['help'])
+
+    parser.epilog = '%s\nMost list selections can use the numeric index or the text\n%s' %(parser.epilog,
+        'Examples:\n%s add_repo --repo 1\n%s add_repo https://github.com/KSP-CKAN/CKAN-meta-dev/archive/RemoteTech-pre.tar.gz ' %(sys.argv[0],sys.argv[0]))
 
     options = parser.parse_args(sys.argv[1:])
     util.DEBUG=options.debug
@@ -132,16 +147,4 @@ if __name__ == '__main__':
 
     repo = ckanRepo.CkanRepo(settings)
 
-    actions = {
-        'show_settings': show_settings,
-        'change_setting': change_setting,
-        'listkspdirs': listkspdirs,
-        'addkspdir': addkspdir,
-        'delkspdir': delkspdir,
-        'default_ksp': defaultksp,
-        'list_repos': list_repos,
-        'add_repo': add_repo,
-        'update': update
-    }
-
-    actions[options.action]()
+    actions[options.action]['method']()
