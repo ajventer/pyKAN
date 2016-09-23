@@ -16,6 +16,8 @@ class CkanRepo(object):
         return util.ReadJsonFromFile(RepoListFile)['repositories']
 
     def update_repository_data(self):
+        RepoListFile = os.path.join(self.settings.KSPDIR,'PYKAN','repolist.json')
+        util.SaveJsonToFile(RepoListFile,util.download_json(util.repository_list))
         repofiles = util.download_files(self.settings.repos(), 
             self.cachedir, 
             self.settings['DownLoadRetryMax'])
