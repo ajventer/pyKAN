@@ -1,0 +1,147 @@
+#!/usr/bin/env python
+from libPyKAN import ckanRepo,pykancfg
+from libPyKAN import util
+import argparse
+import sys
+
+
+if __name__ == '__main__':
+    def show_settings():
+        if options.allsettings:
+            print settings.view_all()
+        else:
+            print settings
+
+    def change_setting():
+        if options.key == None or options.value == None:
+            util.error("changesetting requires --key and --options")
+        key = options.key
+        if not key in settings.flatsettings():
+            foundkey = False
+            for k in settings.flatsettings().keys():
+                if k.lower() == key.lower():
+                    foundkey = True
+                    key = k
+                    break
+            if not foundkey:
+                raise KeyError('Key %s does not exist' % key)
+        util.debug('Updating %s=%s' % (key,options.value))
+        value = options.value
+        if value.isdigit():
+            value = int(value)
+        if isinstance(value,str) and value.lower() in ['true', 'false']:
+            value = value.lower() == 'true' and True or False
+        settings.set(key,value)
+        print "Updated settings:", settings
+        settings.save()
+
+    def listkspdirs():
+        c = 0
+        for i in settings['KSPDIRS']:
+            print '%s: %s' %(c, i)
+            c += 1
+
+    def addkspdir():
+        if not options.kspdir:
+            util.error('You must specify --kspdir with a string path when adding a new KSP directory')
+        settings.addkspdir(kspdir)
+        listkspdirs()
+
+    def delkspdir():
+        if not options.kspdir:
+            util.error('You must specify --kspdir when removing a KSP directory')
+        settings.delkspdir(kspdir)
+        listkspdirs()
+
+    def defaultksp():
+        if not options.kspdir:
+            util.error('You must specify --kspdir to change the default KSP directory ')
+        settings.setdefaultksp(kspdir)
+        listkspdirs()
+
+    def list_repos():
+        if not settings.KSPDIR:
+            util.error('You must set up a KSP directory before you can manage repositories')
+        c = 0
+        repolist = repo.available_repo_list()
+        for i in repolist:
+            print '%s: [%s] %s (%s)' %(c,
+                i['uri'] in settings['Repos'] and '*' or ' ',
+                i['uri'],
+                i['x_comment'])
+            c += 1
+
+    def add_repo():
+        if not options.repo:
+            util.error('You must give a repository index (from list_repos output) to add a repository')
+        if options.repo < 0 or options.repo >= len(repo.available_repo_list()):
+            util.error('Invalid repository index %s' % options.repo)
+        settings.repos().append(repo.available_repo_list()[options.repo]['uri'])
+        settings.KSPSettings['Repos'] = list(set(settings.repos()))
+        settings.save()
+        list_repos()
+
+    def del_repo():
+        if not options.repo:
+            util.error('You must give a repository index (from list_repos output) to remove a repository')
+        if options.repo < 0 or options.repo >= len(repo.available_repo_list()):
+            util.error('Invalid repository index %s' % options.repo)
+        uri = repo.available_repo_list()[options.repo]
+        del(settings.repos()[settings.repos().index(uri)])
+        list_repos()
+
+    def update():
+        repo.update_repository_data()
+
+    parser = argparse.ArgumentParser(description = 'Python client for CKAN data')
+    parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
+    parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
+    parser.add_argument('action',default='show_settings',choices=['show_settings',
+        'change_setting',
+        'listkspdirs',
+        'addkspdir',
+        'delkspdir',
+        'default_ksp',
+        'list_repos',
+        'add_repo',
+        'del_repo',
+        'update'])
+    parser.add_argument('--key',type=str,default=None)
+    parser.add_argument('--value',type=str,default=None)
+    parser.add_argument('--repo',type=int,default=None)
+    parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
+
+    options = parser.parse_args(sys.argv[1:])
+    util.DEBUG=options.debug
+    if isinstance(options.kspdir, str) and not options.kspdir.isdigit():
+        kspdir = options.kspdir
+    else:
+        kspdir = None
+
+    util.debug('KSP Directory: %s'% kspdir)
+
+    settings = pykancfg.PyKANSettings(kspdir)
+
+    if isinstance(options.kspdir,str) and (kspdir == None) and options.kspdir.isdigit():
+        kspdir = settings['KSPDIRS'][int(options.kspdir)]
+        settings = pykancfg.PyKANSettings(kspdir)
+        util.debug('Settings.KSPDIR: %s' %settings.KSPDIR)
+
+    if isinstance(kspdir,str) and not util.is_kspdir(kspdir):
+        util.error('%s Does not appear to be a valid KSP installation' % kspdir)
+
+    repo = ckanRepo.CkanRepo(settings)
+
+    actions = {
+        'show_settings': show_settings,
+        'change_setting': change_setting,
+        'listkspdirs': listkspdirs,
+        'addkspdir': addkspdir,
+        'delkspdir': delkspdir,
+        'default_ksp': defaultksp,
+        'list_repos': list_repos,
+        'add_repo': add_repo,
+        'update': update
+    }
+
+    actions[options.action]()
