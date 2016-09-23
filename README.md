@@ -8,21 +8,21 @@ All the logic is kept in libraries - so that writing a new interface is easy.
 Version 0.0.1-pre
 
 Installation:
-*Clone/Download the repository.
-*Change to the directory where you downloaded
-*./pykan --help
+  *Clone/Download the repository.
+  *Change to the directory where you downloaded
+  *./pykan --help
 
 Current features:
-*Global settings holding list of known KSP installation directories
-*Per KSPDir settings on top of that
+  *Global settings holding list of known KSP installation directories
+  *Per KSPDir settings on top of that
 
 Todo:
-*Fetch repository data from CKAN
-*List available modules
-*Install modules (optional override support for manual mods) with optional download-retries
-*Delete modules
-*Upgrade modules
-*PyQT GUI for graphical usage
+  *Fetch repository data from CKAN
+  *List available modules
+  *Install modules (optional override support for manual mods) with optional download-retries
+  *Delete modules
+  *Upgrade modules
+  *PyQT GUI for graphical usage
 
 
 
