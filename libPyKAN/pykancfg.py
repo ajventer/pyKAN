@@ -7,6 +7,7 @@ import json
 import os
 import util
 import copy
+import version
 
 class PyKANSettings(object):
     def __init__(self, KSPDIR=None):
@@ -25,6 +26,19 @@ class PyKANSettings(object):
             self.KSPSettings=util.ReadJsonFromFile(self.KSPSettingsFile,self.KSPSettings,create=True)
         elif KSPDIR:
             self.KSPSettingsFile = os.path.join(KSPDIR,'PYKAN','pykan_settings.json')
+
+        #Set defaults if needed
+        if KSPDIR:
+            for i in ['minKSPversion','maxKSPversion']:
+                if not i in self.KSPSettings:
+                    for line in open(os.path.join(KSPDIR,'readme.txt')).readlines():
+                        if line.startswith('Version'):
+                            v = str(version.Version(line.split()[1]))
+                            break
+                if not v:
+                    util.error('Invalid KSP directory. No version in readme.txt !')
+                self.KSPSettings[i] = v
+            self.save()
 
         util.debug('Settings object initated: %s' % self.view_all())
         self.KSPDIR=KSPDIR

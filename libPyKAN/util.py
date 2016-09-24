@@ -2,6 +2,8 @@
 import sys
 import json
 import os
+import glob
+import errno
 import multiprocessing
 try:
     import requests
@@ -48,7 +50,7 @@ def download_files(urilist, cachedir, retries):
 
 
 def is_kspdir(path):
-    return os.path.isdir(os.path.join(path,'GameData'))
+    return os.path.isdir(os.path.join(path,'GameData')) and 'readme.txt' in glob.glob('%s/*' %path)
 
 def error(message,code=1):
     sys.stderr.write('%s\n' %message)
