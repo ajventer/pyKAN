@@ -17,14 +17,14 @@ Version 0.0.1-pre
 2. Per KSPDir settings on top of that
 3. Fetch repository data from CKAN
 4. Ability to install incompatible mods. Settings contain minKSPversion and maxKSPversion per install. By default these are set to the KSP version. User can override to, for example, allow mods that are maxed at 1.0.0 to install in 1.1.0.
+5. List available modules. Module listing comes with numerous optional filters which can be combined in arbitrary combinations. Includes text-search, module version and KSP version compatibility. The same filters will be available for selecting mods to install.
 
 ##Todo:
-1. List available modules
-2. Install modules (optional override support for manual mods) with optional download-retries
-3. Delete modules
-4. Upgrade modules
-5. PyQT GUI for graphical usage
-6. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
+1. Install modules (optional override support for manual mods) with optional download-retries
+2. Delete modules
+3. Upgrade modules
+4. PyQT GUI for graphical usage
+5. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
 
 
 

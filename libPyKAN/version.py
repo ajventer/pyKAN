@@ -59,6 +59,8 @@ class Version(object):
         >>> Version(0,0,5,1) > Version(0,0,5)
         True
         """
+        if not isinstance(other,Version):
+            other=Version(other)
         if self.versionlist == other.versionlist:
             #if the contents are identical it's a definite match
             return 0

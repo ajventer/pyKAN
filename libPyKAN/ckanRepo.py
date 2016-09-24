@@ -38,6 +38,8 @@ class CkanRepo(object):
     def read_repository_data(self):
         self.cachedir=os.path.join(self.settings.KSPDIR,'PYKAN','repodata')
         util.mkdir_p(self.cachedir)
+        if not len(glob.glob(self.cachedir+'/*')):
+            self.update_repository_data()
         for repofile in glob.iglob(self.cachedir+'/*'):
             util.debug('Reading %s' % repofile)
             if not tarfile.is_tarfile (repofile):
@@ -56,8 +58,26 @@ class CkanRepo(object):
                         continue
             tar.close()
 
-    def listmodules(filter=None,filtervalue=None):
-        pass
+    def list_modules(self,filtermethods=[],filterargs=[]):
+        """
+        List the modules in the repo, optionally filtering. filter should be a Filter class method. Parameters for the method afterwards
+        """
+        if not self.repodata:
+            self.read_repository_data()
+        for i in self.repodata:
+            if not filtermethods:
+                yield self.repodata[i]
+            else:
+                valid=True
+                for f in filtermethods:
+                    util.debug_n('%s,%s | %s' %(f,filterargs,self.repodata[i]))
+                    if not f(self.repodata[i],**filterargs):
+                        util.debug('-- False')
+                        valid=False
+                        break
+                if valid:
+                    yield self.repodata[i]
+
 
 if __name__ == "__main__":
     import doctest

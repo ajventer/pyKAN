@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-from libPyKAN import ckanRepo,pykancfg
-from libPyKAN import util
+from libPyKAN import ckanRepo,pykancfg,util,filters
+from libPyKAN.version import Version
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
+
 
 
 if __name__ == '__main__':
@@ -96,6 +97,38 @@ if __name__ == '__main__':
 
     def update():
         repo.update_repository_data()
+        print 'Repository updated. %s modules in repo' %(len(repo.repodata.keys()))
+
+    def list_modules():
+        f = filters.Filter(settings)
+        filtermethods = [f.compatible]
+        filterargs = {}
+        result = {}
+        if options.allmods:
+            filtermethods = []
+        if options.search:
+            filtermethods.append(f.regex)
+            filterargs['needle'] = options.search
+        if options.modversion:
+            filtermethods.append(f.by_mod_version)
+            filterargs['compareversion']= options.modversion
+        if options.kspversion:
+            filtermethods.append(f.for_ksp_version)
+            filterargs['kspversion'] = options.kspversion
+        for i in repo.list_modules(filtermethods, filterargs):
+            if options.allversions:
+                print "%s | version: %s" %(i.get('name',''),i.get('version'))
+            else:
+                name = i.get('name','')
+                version = i.get('version','')
+                if not name in result:
+                    result[name] = version
+                if result.get(name,None) and Version(result[name]) < Version(version):
+                    result[name] = version
+        if result:
+            for k,v in result.items():
+                print "%s | %s" %(k,v)
+
 
     actions = {
         'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
@@ -106,8 +139,9 @@ if __name__ == '__main__':
         'default_ksp': {'method': defaultksp,'help': 'Changes the default KSP directory used if no --kspdir is specified'},
         'list_repos': {'method': list_repos,'help': 'List the possible upstream repos and indicates which ones are in use'},
         'add_repo': {'method': add_repo,'help':'Activate another repository for upstream sources. You must specify --repo'},
-        'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository.'},
-        'update': {'method':update, 'help': 'Update the mod data from the repositories'}
+        'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository'},
+        'update': {'method':update, 'help': 'Update the mod data from the repositories'},
+        'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'}
     }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
@@ -118,6 +152,11 @@ if __name__ == '__main__':
     parser.add_argument('--value',type=str,default=None,help='The new value to set for key. Only used with change_setting')
     parser.add_argument('--repo',type=int,default=None,help='The repo index or uri. Used with add_repo and del_repo.')
     parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
+    parser.add_argument('--allmods',action='store_true',help="Show the module list without any filters. Use with list_modules.")
+    parser.add_argument('--search',type=str,default=None,help="Search for module by regular expression. Use with list_modules.")
+    parser.add_argument('--allversions',action='store_true',help="Show the all versions of mods. Default is to only show the highest version.")
+    parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions')
+    parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version')
 
     parser.epilog = 'Actions:\n' 
     for i in sorted(actions.keys()):

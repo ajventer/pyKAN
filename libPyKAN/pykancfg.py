@@ -30,13 +30,14 @@ class PyKANSettings(object):
         #Set defaults if needed
         if KSPDIR:
             for i in ['minKSPversion','maxKSPversion']:
+                v = None
                 if not i in self.KSPSettings:
                     for line in open(os.path.join(KSPDIR,'readme.txt')).readlines():
                         if line.startswith('Version'):
                             v = str(version.Version(line.split()[1]))
                             break
-                if not v:
-                    util.error('Invalid KSP directory. No version in readme.txt !')
+                    if not v:
+                        util.error('Invalid KSP directory. No version in readme.txt !')
                 self.KSPSettings[i] = v
             self.save()
 
