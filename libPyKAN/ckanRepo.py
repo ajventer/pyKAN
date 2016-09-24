@@ -7,6 +7,14 @@ import glob
 
 class CkanRepo(object):
     def __init__(self,settings):
+        """
+        >>> import pykancfg
+        >>> c = CkanRepo(pykancfg.PyKANSettings('test'))
+        >>> c.update_repository_data()
+        >>> c.read_repository_data()
+        >>> isinstance(c.repodata, dict)
+        True
+        """
         self.settings = settings
         self.repodata = {}
         if self.settings.KSPDIR:
@@ -48,6 +56,11 @@ class CkanRepo(object):
                         continue
             tar.close()
 
+    def listmodules(filter=None,filtervalue=None):
+        pass
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
 
 

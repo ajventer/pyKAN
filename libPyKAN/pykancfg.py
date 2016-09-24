@@ -63,6 +63,7 @@ class PyKANSettings(object):
 
     def save(self):
         util.SaveJsonToFile(self.SharedSettingsFile,self.SharedSettings)
+        util.mkdir_p(os.path.dirname(self.KSPSettingsFile))
         util.SaveJsonToFile(self.KSPSettingsFile,self.KSPSettings)
 
     def addkspdir(self,kspdir):
