@@ -79,12 +79,11 @@ def ReadJsonFromFile(filename, default=None,create=False):
             return default
 
 def mkdir_p(targetpath):
-    pathlist = isinstance(targetpath,list) and targetpath or targetpath.split(os.pathsep)
-    pathSoFar = ''
-    for i in pathlist:
-        pathSoFar = os.path.join(pathSoFar,i)
-        if os.path.isdir(pathSoFar):
-            continue
-        else:
-            os.mkdir(pathSoFar)
+    try:
+        os.makedirs(targetpath)
+    except OSError, e:
+        if e.errno != errno.EEXIST:
+            raise
+    return
+
 

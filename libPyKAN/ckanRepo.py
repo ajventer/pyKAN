@@ -2,11 +2,15 @@ import util
 import json
 import os
 import glob
+import tarfile
+import glob
 
 class CkanRepo(object):
     def __init__(self,settings):
         self.settings = settings
-        self.repodata = self.read_repository_data()
+        self.repodata = {}
+        if self.settings.KSPDIR:
+            self.read_repository_data()
 
 
     def available_repo_list(self):
@@ -26,8 +30,23 @@ class CkanRepo(object):
     def read_repository_data(self):
         self.cachedir=os.path.join(self.settings.KSPDIR,'PYKAN','repodata')
         util.mkdir_p(self.cachedir)
-        #Need to finish writing this method
-        return {}
+        for repofile in glob.iglob(self.cachedir+'/*'):
+            util.debug('Reading %s' % repofile)
+            if not tarfile.is_tarfile (repofile):
+                util.debug('%s is not a tarfile -skipping' % repofile)
+                continue
+            tar = tarfile.open(repofile,'r:*')
+            for tarinfo in tar:
+                util.debug("%s | %s" %(tarinfo.name,tarinfo.isreg() and 'file' or tarinfo.isdir() and'directory' or 'other'))
+                if tarinfo.isreg():
+                    try:
+                        entrydata = json.loads(tar.extractfile(tarinfo).read())
+                        util.debug(json.dumps(entrydata, indent=4))
+                        self.repodata[tarinfo.name] = entrydata
+                    except ValueError:
+                        #Not a json file ?
+                        continue
+            tar.close()
 
 
 
