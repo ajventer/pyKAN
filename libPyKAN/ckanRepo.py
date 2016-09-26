@@ -4,7 +4,7 @@ import os
 import glob
 import tarfile
 import glob
-
+from installed import Installed
 class CkanRepo(object):
     def __init__(self,settings):
         """
@@ -33,7 +33,11 @@ class CkanRepo(object):
         repofiles = util.download_files(self.settings.repos(), 
             self.cachedir, 
             self.settings['DownLoadRetryMax'])
-        #Need to add file extraction code here
+        self.read_repository_data()
+        ins = Installed(self.settings,self)
+        ins.import_ckan()
+        ins.get_manual_mods()
+
 
     def read_repository_data(self):
         self.cachedir=os.path.join(self.settings.KSPDIR,'PYKAN','repodata')
@@ -57,6 +61,27 @@ class CkanRepo(object):
                         #Not a json file ?
                         continue
             tar.close()
+
+    def install_path(self,repoentry):
+        result = []
+        for i in repoentry.get('install',[]):
+            #Seriously CKAN ? different keys that this value may be in - and no difference between them ?
+            for k in ['file','find']:
+                f = i.get(k,'')
+                f =os.path.join(i.get('install_to'),f)
+                if f and f != 'GameData':
+                    result.append(f)
+        return list(set(result))
+
+
+    def list_install_paths(self):
+        result = {}
+        if not self.repodata:
+            self.read_repository_data()
+        for i in self.repodata:
+            for x in self.install_path(self.repodata[i]):
+                result[x] = self.repodata[i].get('name')
+        return result
 
     def list_modules(self,filtermethods=[],filterargs=[]):
         """
