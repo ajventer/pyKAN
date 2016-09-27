@@ -105,6 +105,10 @@ if __name__ == '__main__':
         filtermethods = [f.compatible]
         filterargs = {}
         result = {}
+        if options.installed:
+            for i in INSTALLED.list_modules():
+                print '%s | %s (%s)' %(i['name'],i['version'],i['status'])
+            return
         if options.allmods:
             filtermethods = []
         if options.search:
@@ -118,7 +122,7 @@ if __name__ == '__main__':
             filterargs['kspversion'] = options.kspversion
         for i in repo.list_modules(filtermethods, filterargs):
             if options.allversions:
-                print "%s | version: %s" %(i.get('name',''),i.get('version'))
+                print "%s | version: %s (%s)" %(i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i)))
             else:
                 name = i.get('name','')
                 version = i.get('version','')
@@ -128,7 +132,7 @@ if __name__ == '__main__':
                     result[name] = version
         if result:
             for k,v in result.items():
-                print "%s | %s" %(k,v)
+                print "%s | %s (%s)" %(k,v,INSTALLED.modstatus(k))
 
 
     actions = {
@@ -155,9 +159,10 @@ if __name__ == '__main__':
     parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
     parser.add_argument('--allmods',action='store_true',help="Show the module list without any filters. Use with list_modules.")
     parser.add_argument('--search',type=str,default=None,help="Search for module by regular expression. Use with list_modules.")
-    parser.add_argument('--allversions',action='store_true',help="Show the all versions of mods. Default is to only show the highest version.")
-    parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions')
-    parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version')
+    parser.add_argument('--allversions',action='store_true',help="Show the all versions of mods. Default is to only show the highest version. Use with list_modules.")
+    parser.add_argument('--installed',action='store_true',help="Show only installed modules. Use with list_modules..")
+    parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions. Use with list_modules.')
+    parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version. Use with list_modules.')
 
     parser.epilog = 'Actions:\n' 
     for i in sorted(actions.keys()):
@@ -186,6 +191,7 @@ if __name__ == '__main__':
         util.error('%s Does not appear to be a valid KSP installation' % kspdir)
 
     repo = ckanRepo.CkanRepo(settings)
-    
+
+    INSTALLED = Installed(settings,repo)
 
     actions[options.action]['method']()

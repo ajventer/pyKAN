@@ -30,13 +30,19 @@ class Installed(object):
             for mod in self.installed_mods[i]:
                 yield mod
 
+    def list_modules(self):
+        for i in ['installed_modules','manual_modules','ckan_modules']:
+            for mod in self.installed_mods[i]:
+                yield {'name': mod, 'version': self.installed_mods[i][mod]['version'],"status":self.modstatus(mod)}
+
+
     def modstatus(self,mod):
         if mod in self.installed_mods['installed_modules']:
-            return 'Installed(PyKAN)'
+            return 'Installed (PyKAN)'
         if mod in self.installed_mods['manual_modules']:
-            return 'Installed(Manual)'
+            return 'Installed (Manual)'
         if mod in self.installed_mods['ckan_modules']:
-            return 'Installed(CKAN)'
+            return 'Installed (CKAN)'
         return 'Not installed'
 
     def add_mod(self,name,repoentry,subrepo='installed_modules'):
