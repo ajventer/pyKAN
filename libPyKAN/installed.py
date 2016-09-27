@@ -14,14 +14,33 @@ class Installed(object):
         self.repo = repo
         self.cachedir = os.path.dirname(settings.KSPSettingsFile)
         self.installedListFile = os.path.join(self.cachedir,'installed_mods.json')
-        self.installed_mods = util.ReadJsonFromFile(self.installedListFile, {}, True)
+        self.installed_mods = util.ReadJsonFromFile(self.installedListFile, {'installed_modules':{},'manual_modules':{},'ckan_modules':{}}, True)
 
     def import_ckan(self):
-        #TODO implement this
-        pass
+        CKAN=os.path.join(self.settings.KSPDIR,'CKAN','registry.json')
+        if os.path.exists(CKAN):
+            CKANData = util.ReadJsonFromFile(CKAN)['installed_modules']
+            for mod in CKANData:
+                util.debug('Registering CKAN installed module %s' % mod)
+                self.add_mod(CKANData[mod]['source_module'].get('name',mod),CKANData[mod]['source_module'],'ckan_modules')
 
-    def add_mod(self,name,repoentry):
-        self.installed_mods[name] = repoentry
+
+    def all_modnames(self):
+        for i in ['installed_modules','manual_modules','ckan_modules']:
+            for mod in self.installed_mods[i]:
+                yield mod
+
+    def modstatus(self,mod):
+        if mod in self.installed_mods['installed_modules']:
+            return 'Installed(PyKAN)'
+        if mod in self.installed_mods['manual_modules']:
+            return 'Installed(Manual)'
+        if mod in self.installed_mods['ckan_modules']:
+            return 'Installed(CKAN)'
+        return 'Not installed'
+
+    def add_mod(self,name,repoentry,subrepo='installed_modules'):
+        self.installed_mods[subrepo][name] = repoentry
         util.SaveJsonToFile(self.installedListFile, self.installed_mods)
 
     def get_manual_mods(self):
@@ -52,7 +71,7 @@ class Installed(object):
         #Now we need to try and determine the versions so we can match them to the correct repo entries.
         for name in sorted(names_found):
             #Skip anything that's already in our own dataset
-            if not name in self.installed_mods:
+            if not name in list(self.all_modnames()):
                 util.debug('Trying to find version for %s' % name)
                 path = os.path.join(self.settings.KSPDIR,names_found[name]['path'])
                 util.debug('Found at %s' % path)
@@ -86,7 +105,7 @@ class Installed(object):
             matches = [self.repo.repodata[i] for i in self.repo.repodata if self.repo.repodata[i].get('name') == name and self.repo.repodata[i]['version'] == names_found[name]['version']]
             util.debug(matches)
             if matches:
-                self.add_mod(name, matches[0])
+                self.add_mod(name, matches[0],'manual_modules')
         
 
 
