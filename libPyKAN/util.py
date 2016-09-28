@@ -4,6 +4,7 @@ import json
 import os
 import glob
 import errno
+import hashlib
 import multiprocessing
 try:
     import requests
@@ -38,13 +39,26 @@ def __download_file__(dl_data):
             retries += 1
             debug ('Download error %s. %s  retries remain' %(e, dl_data['retries'] - retries))
             done = False
+        if dl_data['sha']:
+            #Sha256
+            text = open(filename,'rb').read()
+            if len(dl_data['sha']) == 64:
+                hashobj = hashlib.sha256(text)
+            else: #Sha1
+                hashobj = hashlib.sha1(text)
+            if hashobj.hexdigest() != dl_data['sha']:
+                util.debug('Error in sha verification')
+                done = False
+                retries += 1
+                os.unlink(filename)
+ 
     debug('')
     return filename        
 
 def download_files(urilist, cachedir, retries):
     dl_data = []
     for uri in urilist:
-        dl_data.append({"uri": uri,"cachedir": cachedir, 'retries': retries})
+        dl_data.append({"uri": uri['uri'],"cachedir": cachedir, 'retries': retries, 'sha': uri['sha']})
     pool = multiprocessing.Pool()
     return pool.map(__download_file__, dl_data)
 
