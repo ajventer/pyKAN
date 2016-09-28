@@ -5,6 +5,9 @@ import glob
 import tarfile
 import glob
 from installed import Installed
+from filters import Filter
+from version import Version
+
 class CkanRepo(object):
     def __init__(self,settings):
         """
@@ -31,8 +34,8 @@ class CkanRepo(object):
         RepoListFile = os.path.join(self.settings.KSPDIR,'PYKAN','repolist.json')
         util.SaveJsonToFile(RepoListFile,util.download_json(util.repository_list))
         uris = []
-        for i in self.settings.repos:
-            uris.append('uri': i, 'sha': None)
+        for i in self.settings.repos():
+            uris.append({'uri': i, 'sha': None})
         repofiles = util.download_files(uris, 
             self.cachedir, 
             self.settings['DownLoadRetryMax'])
@@ -41,6 +44,20 @@ class CkanRepo(object):
         ins.import_ckan()
         ins.get_manual_mods()
 
+    def find_latest(self, identifier):
+        result = {'version':'0.0.0'}
+        for i in self.list_modules([Filter(self.settings).compatible],{}):
+            if (i['identifier'] == identifier or i['name'] == identifier or identifier in i.get('provides',[])) and Version(i['version']) > Version(result['version']):
+               result = i
+        if 'identifier' in result:
+            return result
+        return None
+
+    def find_version(self, identifier, version):
+        for i in self.repodata:
+            if (self.repodata[i]['identifier'] == identifier or self.repodata[i]['name'] == identifier) and Version(self.repodata[i]['version']) == Version(version):
+                return self.repodata[i]
+        return None
 
     def read_repository_data(self):
         self.cachedir=os.path.join(self.settings.KSPDIR,'PYKAN','repodata')
@@ -59,6 +76,11 @@ class CkanRepo(object):
                     try:
                         entrydata = json.loads(tar.extractfile(tarinfo).read())
                         util.debug(json.dumps(entrydata, indent=4))
+                        if not 'identifier' in entrydata:
+                            if 'name' in entrydata:
+                                entrydata['identifier'] = entrydata['name']
+                            else:
+                                continue
                         self.repodata[tarinfo.name] = entrydata
                     except ValueError:
                         #Not a json file ?

@@ -96,7 +96,7 @@ class PyKANSettings(object):
             util.debug('Found %s in install specific settings' % key)
             return self.KSPSettings[key]
         util.debug('Could not find %s' % key)
-        raise ItemError
+        raise KeyError
 
     def __setitem__(self,key, value):
         util.debug('Setting key %s to %s' %(key,value))

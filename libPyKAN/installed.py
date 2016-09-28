@@ -22,7 +22,7 @@ class Installed(object):
             CKANData = util.ReadJsonFromFile(CKAN)['installed_modules']
             for mod in CKANData:
                 util.debug('Registering CKAN installed module %s' % mod)
-                self.add_mod(CKANData[mod]['source_module'].get('name',mod),CKANData[mod]['source_module'],'ckan_modules')
+                self.add_mod(mod,CKANData[mod]['source_module'],'ckan_modules')
 
 
     def all_modnames(self):
@@ -50,6 +50,7 @@ class Installed(object):
         util.SaveJsonToFile(self.installedListFile, self.installed_mods)
 
     def get_manual_mods(self):
+        self.installed_mods['manual_modules'] = {}
         util.debug('Searching for manually installed mods')
         names_found = {}
         striplen = len(self.settings.KSPDIR.split('/'))

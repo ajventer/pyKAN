@@ -2,6 +2,7 @@
 from libPyKAN import ckanRepo,pykancfg,util,filters
 from libPyKAN.version import Version
 from libPyKAN.installed import Installed
+from libPyKAN.modmanager import ModManager
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
@@ -107,7 +108,7 @@ if __name__ == '__main__':
         result = {}
         if options.installed:
             for i in INSTALLED.list_modules():
-                print '%s:%s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status'])
+                print '%s:  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status'])
             return
         if options.allmods:
             filtermethods = []
@@ -122,16 +123,23 @@ if __name__ == '__main__':
             filterargs['kspversion'] = options.kspversion
         for i in repo.list_modules(filtermethods, filterargs):
             if options.allversions:
-                print "%s:%s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i)))
+                print "%s:  %s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i)))
             else:
                 name = i.get('name','')
                 version = i.get('version','')
                 modid = i['identifier']
                 if modid not in result or Version(result[modid]['version']) < Version(version):
-                    result[modid] = {'name': name, 'version': version
+                    result[modid] = {'name': name, 'version': version}
         if result:
-            for i in result.items():
-                print "%s:%s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(k))
+            for i in result:
+                print "%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i))
+
+    def install_mod():
+        if not options.module:
+            util.error('Must specify --module with install')
+        modname = options.module
+        mod = repo.find_latest(modname)
+        print ModManager(mod, settings,repo).get_download_list()
 
 
     actions = {
@@ -145,7 +153,8 @@ if __name__ == '__main__':
         'add_repo': {'method': add_repo,'help':'Activate another repository for upstream sources. You must specify --repo'},
         'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository'},
         'update': {'method':update, 'help': 'Update the mod data from the repositories'},
-        'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'}
+        'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
+        'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'}
     }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
@@ -162,6 +171,8 @@ if __name__ == '__main__':
     parser.add_argument('--installed',action='store_true',help="Show only installed modules. Use with list_modules..")
     parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions. Use with list_modules.')
     parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version. Use with list_modules.')
+    parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with install, uninstall and upgrade.')
+    parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
 
     parser.epilog = 'Actions:\n' 
     for i in sorted(actions.keys()):
