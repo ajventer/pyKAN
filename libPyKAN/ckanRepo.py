@@ -83,7 +83,7 @@ class CkanRepo(object):
             self.read_repository_data()
         for i in self.repodata:
             for x in self.install_path(self.repodata[i]):
-                result[x] = self.repodata[i].get('name')
+                result[x] = self.repodata[i]['identifier']
         return result
 
     def list_modules(self,filtermethods=[],filterargs=[]):

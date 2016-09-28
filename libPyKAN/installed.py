@@ -33,7 +33,7 @@ class Installed(object):
     def list_modules(self):
         for i in ['installed_modules','manual_modules','ckan_modules']:
             for mod in self.installed_mods[i]:
-                yield {'name': mod, 'version': self.installed_mods[i][mod]['version'],"status":self.modstatus(mod)}
+                yield {'identifier':mod, 'name': self.installed_mods[i][mod].get('name',''), 'version': self.installed_mods[i][mod]['version'],"status":self.modstatus(mod)}
 
 
     def modstatus(self,mod):
@@ -45,8 +45,8 @@ class Installed(object):
             return 'Installed (CKAN)'
         return 'Not installed'
 
-    def add_mod(self,name,repoentry,subrepo='installed_modules'):
-        self.installed_mods[subrepo][name] = repoentry
+    def add_mod(self,identifier,repoentry,subrepo='installed_modules'):
+        self.installed_mods[subrepo][identifier] = repoentry
         util.SaveJsonToFile(self.installedListFile, self.installed_mods)
 
     def get_manual_mods(self):
@@ -70,7 +70,7 @@ class Installed(object):
                 else:
                     possible = list(self.repo.list_modules([filters.Filter(self.settings).regex],{"needle": '%s' %os.path.basename(sp)}))
                     if possible:
-                        names_found[possible[0]['name']] = {'path':sp}
+                        names_found[possible[0]['identifier']] = {'path':sp}
                         break
         #At this stage names_found should map every module we found to the paths we found it by.
         #Due to the ordering above, module directories take precedence over module files.
@@ -108,7 +108,7 @@ class Installed(object):
         util.debug (names_found)
         for name in [i for i in names_found if 'version' in names_found[i]]:
             util.debug(names_found[name])
-            matches = [self.repo.repodata[i] for i in self.repo.repodata if self.repo.repodata[i].get('name') == name and self.repo.repodata[i]['version'] == names_found[name]['version']]
+            matches = [self.repo.repodata[i] for i in self.repo.repodata if self.repo.repodata[i]['identifier'] == name and Version(self.repo.repodata[i]['version']) == Version(names_found[name]['version'])]
             util.debug(matches)
             if matches:
                 self.add_mod(name, matches[0],'manual_modules')

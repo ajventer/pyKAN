@@ -107,7 +107,7 @@ if __name__ == '__main__':
         result = {}
         if options.installed:
             for i in INSTALLED.list_modules():
-                print '%s | %s (%s)' %(i['name'],i['version'],i['status'])
+                print '%s:%s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status'])
             return
         if options.allmods:
             filtermethods = []
@@ -122,17 +122,16 @@ if __name__ == '__main__':
             filterargs['kspversion'] = options.kspversion
         for i in repo.list_modules(filtermethods, filterargs):
             if options.allversions:
-                print "%s | version: %s (%s)" %(i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i)))
+                print "%s:%s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i)))
             else:
                 name = i.get('name','')
                 version = i.get('version','')
-                if not name in result:
-                    result[name] = version
-                if result.get(name,None) and Version(result[name]) < Version(version):
-                    result[name] = version
+                modid = i['identifier']
+                if modid not in result or Version(result[modid]['version']) < Version(version):
+                    result[modid] = {'name': name, 'version': version
         if result:
-            for k,v in result.items():
-                print "%s | %s (%s)" %(k,v,INSTALLED.modstatus(k))
+            for i in result.items():
+                print "%s:%s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(k))
 
 
     actions = {
