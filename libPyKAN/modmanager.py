@@ -26,6 +26,9 @@ class ModManager(object):
 
 
     def get_download_list(self, recommends=True, suggests=False):
+        #TODO - this algorithm is O(n*n) first thing we optimize after initial release.
+        #There must be a faster way to do this. 
+        #Paralelize maybe ? 
         dl_list = {}
         for mod in self.repoentries:
             dl_list[mod['identifier']] = mod
@@ -42,9 +45,7 @@ class ModManager(object):
             for mod in dl_list.values():
                 for key in searchkeys:
                     if key in mod:
-                        print key,
                         for m in mod[key]:
-                            print m['name'],
                             found =  self.repo.find_latest(m['name'])
                             if not found and key is not 'suggests': #Failing to find a suggestion is not a crisis
                                 raise MissingDependencyException('Could not find module %s' %m['name'])

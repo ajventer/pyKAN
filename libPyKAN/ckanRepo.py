@@ -44,7 +44,7 @@ class CkanRepo(object):
         ins.import_ckan()
         ins.get_manual_mods()
 
-    def find_latest(self, identifier, filters=None, filterargs=[]):
+    def find_latest(self, identifier, filters=None, filterargs={}):
         if filters is None: 
             filters = [Filter(self.settings).compatible]
         result = {}
@@ -109,7 +109,7 @@ class CkanRepo(object):
                 result[x] = self.repodata[i]['identifier']
         return result
 
-    def list_modules(self,filtermethods=[],filterargs=[]):
+    def list_modules(self,filtermethods=[],filterargs={}):
         """
         List the modules in the repo, optionally filtering. filter should be a Filter class method. Parameters for the method afterwards
         """

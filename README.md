@@ -28,6 +28,7 @@ Version 0.0.1-pre
 3. Upgrade modules
 4. PyQT GUI for graphical usage
 5. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
+6. Optimize the O(N) and O(n*x) algorithms.
 
 
 
