@@ -64,6 +64,8 @@ class Version(object):
         if self.versionlist == other.versionlist:
             #if the contents are identical it's a definite match
             return 0
+        if str(self) == 'any' or str(other) == 'any':
+            return 0
         if len(other.versionlist) > self.versionlist:
             return other.__cmp__(self)
         for c,i in enumerate(self.versionlist):

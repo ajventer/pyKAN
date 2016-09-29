@@ -2,10 +2,11 @@
 from libPyKAN import ckanRepo,pykancfg,util,filters
 from libPyKAN.version import Version
 from libPyKAN.installed import Installed
-from libPyKAN.modmanager import ModManager,MultiProviderException
+from libPyKAN.modmanager import ModManager,MultiProviderException,MissingDependencyException
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
+import json
 
 
 
@@ -155,6 +156,12 @@ if __name__ == '__main__':
             for i in result:
                 print "%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i))
 
+    def show_module():
+        if not options.module:
+            util.error('Must specify --module with show')
+        for mod in repo.find_latest(options.module, filters=[]).values():
+            print json.dumps(mod, indent=8)
+
     def install_mod():
         done = False
         if not options.module:
@@ -171,13 +178,18 @@ if __name__ == '__main__':
             done = True
             try:
                 downloadlist += ModManager(mods, settings,repo).get_download_list(True,True)
-            except MultiProviderException as e:
+            except Exception as e:
+                if isinstance(e,MultiProviderException):
                     modlist = str(e).split(',')
                     answer = select_menu('Multiple mods provide a required download, please select one', modlist)
                     choice = modlist[answer]
                     for m in repo.find_latest(choice).values():
                         mods.append(m)
                     done = False
+                elif isinstance(e,MissingDependencyException):
+                    util.error(str(e))
+                else:
+                    raise
         for i in downloadlist:
             print i
 
@@ -194,6 +206,7 @@ if __name__ == '__main__':
         'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository'},
         'update': {'method':update, 'help': 'Update the mod data from the repositories'},
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
+        'show': {'method': show_module, 'help':'Show full details on a particular module. Needs --module option.'},        
         'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'}
     }
 
@@ -211,7 +224,7 @@ if __name__ == '__main__':
     parser.add_argument('--installed',action='store_true',help="Show only installed modules. Use with list_modules..")
     parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions. Use with list_modules.')
     parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version. Use with list_modules.')
-    parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with install, uninstall and upgrade.')
+    parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with show,install, uninstall and upgrade.')
     parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
 
     parser.epilog = 'Actions:\n' 

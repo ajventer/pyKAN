@@ -30,7 +30,7 @@ class Filter(object):
         """
         modversion = repoentry.get('ksp_version',None)
         if modversion:
-            return Version(modversion) >= Version(self.settings.KSPSettings['minKSPversion']) and Version(modversion) <= Version(self.settings.KSPSettings['maxKSPversion'])
+            return modversion == 'any' or Version(modversion) >= Version(self.settings.KSPSettings['minKSPversion']) and Version(modversion) <= Version(self.settings.KSPSettings['maxKSPversion'])         
         minversion = repoentry.get('ksp_version_min',None)
         maxversion = repoentry.get('ksp_version_max',None)
         if minversion and not maxversion:

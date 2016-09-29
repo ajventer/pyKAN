@@ -44,16 +44,15 @@ class CkanRepo(object):
         ins.import_ckan()
         ins.get_manual_mods()
 
-    def find_latest(self, identifier):
+    def find_latest(self, identifier, filters=None, filterargs=[]):
+        if filters is None: 
+            filters = [Filter(self.settings).compatible]
         result = {}
-        for i in self.list_modules([Filter(self.settings).compatible],{}):
+        for i in self.list_modules(filters,filterargs):
             if (i['identifier'] == identifier or i['name'] == identifier or identifier in i.get('provides',[])):
                 if  i['identifier'] not in result or i['version'] >= result[i['identifier']]['version']:
                     result[i['identifier']] = i
         return result
-
-
-
 
     def find_version(self, identifier, version):
         for i in self.repodata:
