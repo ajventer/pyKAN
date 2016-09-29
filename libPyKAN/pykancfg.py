@@ -14,7 +14,9 @@ class PyKANSettings(object):
         self.SharedSettingsFile = os.path.join(os.getenv('HOME'),'.pykan.json')
         self.SharedSettings = {'KSPDIRS': [],"DownLoadRetryMax": 1}
         steamKSPDir = os.path.join(os.getenv('HOME'),'.steam','steamapps','common','Kerbal Space Program')
-        if util.is_kspdir(steamKSPDir):
+        if KSPDIR is None and util.is_kspdir(steamKSPDir):
+            util.debug('Found steam KSPdir')
+            KSPDIR=steamKSPDir
             self.SharedSettings['KSPDIRS'].append(steamKSPDir)
         self.SharedSettings = util.ReadJsonFromFile(self.SharedSettingsFile, self.SharedSettings, create=True)
         self.KSPSettings={'Repos':[util.default_ckan_repo]}
@@ -31,7 +33,7 @@ class PyKANSettings(object):
         if KSPDIR:
             for i in ['minKSPversion','maxKSPversion']:
                 v = None
-                if not i in self.KSPSettings:
+                if not i in self.KSPSettings or not self.KSPSettings[i]:
                     for line in open(os.path.join(KSPDIR,'readme.txt')).readlines():
                         if line.startswith('Version'):
                             v = str(version.Version(line.split()[1]))
@@ -39,7 +41,7 @@ class PyKANSettings(object):
                     if not v:
                         util.error('Invalid KSP directory. No version in readme.txt !')
                 self.KSPSettings[i] = v
-            self.save()
+        self.save()
 
         util.debug('Settings object initated: %s' % self.view_all())
         self.KSPDIR=KSPDIR

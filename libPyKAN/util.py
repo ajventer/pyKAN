@@ -64,7 +64,7 @@ def download_files(urilist, cachedir, retries):
 
 
 def is_kspdir(path):
-    return os.path.isdir(os.path.join(path,'GameData')) and 'readme.txt' in glob.glob('%s/*' %path)
+    return os.path.isdir(os.path.join(path,'GameData')) and os.path.join(path,'readme.txt') in glob.glob('%s/*' %path)
 
 def error(message,code=1):
     sys.stderr.write('%s\n' %message)

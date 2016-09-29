@@ -2,11 +2,32 @@
 from libPyKAN import ckanRepo,pykancfg,util,filters
 from libPyKAN.version import Version
 from libPyKAN.installed import Installed
-from libPyKAN.modmanager import ModManager
+from libPyKAN.modmanager import ModManager,MultiProviderException
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
 
+
+
+def select_menu(msg, options):
+    valid_answer = False
+    while not valid_answer:
+        print
+        print msg
+        for i in options:
+            print '%s: %s' %(options.index(i),i)
+
+        answer = raw_input('Choice:')
+        valid_answer = answer.isdigit() and int(answer) >= 0 and int(answer) < len(options)
+        if not valid_answer:
+            valid_answer = answer in options
+        if answer.isdigit():
+            answer = int(answer)
+        else:
+            answer = answer in options and options.index(answer) or None
+        if not valid_answer:
+            print "\nError. Invalid choice. Please try again"
+    return answer
 
 
 if __name__ == '__main__':
@@ -135,11 +156,30 @@ if __name__ == '__main__':
                 print "%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i))
 
     def install_mod():
+        done = False
         if not options.module:
             util.error('Must specify --module with install')
-        modname = options.module
-        mod = repo.find_latest(modname)
-        print ModManager(mod, settings,repo).get_download_list()
+        downloadlist = []
+        mods = repo.find_latest(options.module)
+        if len(mods) > 1:
+            answer = select_menu('Multiple mods match your search, please select one', mods.keys())
+            mods = [mods[mods.keys()[answer]]]
+        else:
+            modid = mods.keys()[0]
+            mods = [mods[modid]]        
+        while not done:
+            done = True
+            try:
+                downloadlist += ModManager(mods, settings,repo).get_download_list(True,True)
+            except MultiProviderException as e:
+                    modlist = str(e).split(',')
+                    answer = select_menu('Multiple mods provide a required download, please select one', modlist)
+                    choice = modlist[answer]
+                    for m in repo.find_latest(choice).values():
+                        mods.append(m)
+                    done = False
+        for i in downloadlist:
+            print i
 
 
     actions = {
@@ -200,8 +240,11 @@ if __name__ == '__main__':
     if isinstance(kspdir,str) and not util.is_kspdir(kspdir):
         util.error('%s Does not appear to be a valid KSP installation' % kspdir)
 
-    repo = ckanRepo.CkanRepo(settings)
+    if settings.KSPDIR:
+        repo = ckanRepo.CkanRepo(settings)
 
-    INSTALLED = Installed(settings,repo)
+        INSTALLED = Installed(settings,repo)
+
+    settings.reload()
 
     actions[options.action]['method']()

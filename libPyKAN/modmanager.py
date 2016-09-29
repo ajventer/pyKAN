@@ -3,9 +3,15 @@ from installed import Installed
 from version import Version
 import util
 
+class MultiProviderException(Exception):
+    pass    
+
+class MissingDependencyException(Exception):
+    pass    
+
 class ModManager(object):
-    def __init__(self, repoentry, settings, repo):
-        self.repoentry = repoentry
+    def __init__(self, repoentries, settings, repo):
+        self.repoentries = repoentries
         self.settings = settings
         self.repo = repo
         self.installed = Installed(self.settings, self.repo)
@@ -18,41 +24,43 @@ class ModManager(object):
         else:
             return None
 
-    def __deplist__(self, key, has=[]):
-        result = []
-        insmods = list(self.installed.all_modnames())
-        if self.repoentry in has:
-            return []
-        if key in self.repoentry:
-            for mod in self.repoentry[key]:
-                mod = mod['name']
-                m = self.repo.find_latest(mod)
-                if not m:
-                    util.error('Could not find required dependency %s' % mod)
-                if m['identifier'] in insmods or m.get('name','') in insmods:
-                    try:
-                        imod = self.installed.installed_mods[m['identifier']]
-                    except KeyError:
-                        imod = self.installed.installed_mods[m['name']]
-                    if Version(m['version']) <= Version(imod['version']):
-                        continue #Better version already installed
-                result.append(m)
-                result += ModManager(m,self.settings, self.repo).__deplist__(key, result)
-        return result
-                
 
     def get_download_list(self, recommends=True, suggests=False):
-        #This mod must always be in the list.
-        dl_list = [{'uri': self.repoentry['download'], 'sha':self.__get_sha__(self.repoentry)}]
-        #Dependencies always get added:
-        for mod in self.__deplist__('depends'):
-            dl_list.append({'uri': mod['download'], 'sha': self.__get_sha__(mod)})
-        if recommends:           
-            for mod in self.__deplist__('recommends'):
-                dl_list.append({'uri': mod['download'], 'sha': self.__get_sha__(mod)})
+        dl_list = {}
+        for mod in self.repoentries:
+            dl_list[mod['identifier']] = mod
+        searchkeys = ['depends']
+        if recommends:
+            searchkeys.append('recommends')
         if suggests:
-            for mod in self.__deplist__('suggests'):
-                dl_list.append({'uri': mod['download'], 'sha': self.__get_sha__(mod)})
+            searchkeys.append('suggests')
+        to_add = True
+        count = 0
+        while to_add:
+            count += 1
+            to_add = {}
+            for mod in dl_list.values():
+                for key in searchkeys:
+                    if key in mod:
+                        print key,
+                        for m in mod[key]:
+                            print m['name'],
+                            found =  self.repo.find_latest(m['name'])
+                            if not found:
+                                raise MissingDependencyException('Could not find module %s' %m['name'])
+                            if len(found) > 1:
+                                fnd = [i for i in found if i in dl_list or i in self.installed.all_modnames()]
+                                if not fnd:
+                                    raise MultiProviderException(','.join(found.keys()))
+                                else:
+                                    found = fnd
+                            for f in found:
+                                if f not in dl_list and f not in self.installed.all_modnames():
+                                    to_add[f] = found[f]
+            dl_list.update(to_add)
+        # self.repoentries = []
+        # for mod in dl_list:
+        #     self.repoentries.append(mod)
         return dl_list
 
 

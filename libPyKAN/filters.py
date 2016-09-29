@@ -40,8 +40,8 @@ class Filter(object):
         if minversion and maxversion:
             return Version(self.settings.KSPSettings['maxKSPversion']) >= Version(minversion) and Version(self.settings.KSPSettings['minKSPversion']) <= Version(maxversion)
             
-        #If we can't figure out compatibility - we assume no
-        return False
+        #If we can't figure out compatibility - we assume yes. My first thought would be no but apparently CKAN assumes yes - which forces us to follow suit
+        return True
 
 
 
