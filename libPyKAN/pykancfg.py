@@ -22,25 +22,25 @@ class PyKANSettings(object):
         self.KSPSettings={'Repos':[util.default_ckan_repo]}
         if not KSPDIR and len(self.SharedSettings['KSPDIRS']):
             KSPDIR=self.SharedSettings['KSPDIRS'][0]
-        if KSPDIR and KSPDIR in self.SharedSettings.get('KSPDIRS',[]):
+        if KSPDIR:
+            util.debug('Found KSP directory')
             self.KSPSettingsFile = os.path.join(KSPDIR,'PYKAN','pykan_settings.json')
             util.mkdir_p(os.path.dirname(self.KSPSettingsFile))
-            self.KSPSettings=util.ReadJsonFromFile(self.KSPSettingsFile,self.KSPSettings,create=True)
-        elif KSPDIR:
-            self.KSPSettingsFile = os.path.join(KSPDIR,'PYKAN','pykan_settings.json')
-
-        #Set defaults if needed
-        if KSPDIR:
+            self.KSPSettings=util.ReadJsonFromFile(self.KSPSettingsFile,self.KSPSettings,create=True)            
             for i in ['minKSPversion','maxKSPversion']:
+                util.debug('Checking %s: %s' % (i,self.KSPSettings.get(i,None)))
                 v = None
-                if not i in self.KSPSettings or not self.KSPSettings[i]:
+                if self.KSPSettings.get(i,None) == None:
+                    util.debug('%s is not set - parsing KSP readme.txt')
                     for line in open(os.path.join(KSPDIR,'readme.txt')).readlines():
                         if line.startswith('Version'):
                             v = str(version.Version(line.split()[1]))
+                            util.debug('Found value for %s: %s' %(i,v))
                             break
                     if not v:
                         util.error('Invalid KSP directory. No version in readme.txt !')
-                self.KSPSettings[i] = v
+                    util.debug('Setting %s to %s' % (i,v))
+                    self.KSPSettings[i] = v
         self.save()
 
         util.debug('Settings object initated: %s' % self.view_all())
