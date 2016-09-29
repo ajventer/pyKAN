@@ -6,6 +6,7 @@ import sys
 import os
 import re
 import zipfile
+from installed import Installed
 import shutil #Warning to windows porters - not sure how well this works on windows
 
 #These exceptions are used as callbacks to alert calling applications that we need human input
@@ -63,6 +64,7 @@ class ModManager(object):
 
 
     def install(self):
+        ins = Installed(self.repo,self.settings)
         modlist = {}
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
@@ -102,6 +104,7 @@ class ModManager(object):
                                 #so we are forced to do this.
                                 util.debug('Extracting file %s' % dest)
                                 open(dest,'w').write(z.open(member).read())
+                ins.add_mod(mod['identifier'],mod)
 
 
     def get_download_list(self, recommends='ask', suggests='ask',blacklist=[]):

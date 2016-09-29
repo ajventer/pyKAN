@@ -58,21 +58,26 @@ class Installed(object):
         for root, subdirs, files in os.walk(self.settings.KSPDIR):
             for f in files:
                 fp = os.path.join(root,f)
+                if 'Squad' in fp:
+                    continue                
                 fp = '/'.join(fp.split('/')[striplen:])
                 if fp in pathlist:
                     names_found[pathlist[fp]] = {'path':fp}
             for s in subdirs:
                 sp = os.path.join(root, s)
+                if 'Squad' in sp:
+                    continue                
                 sp = '/'.join(sp.split('/')[striplen:])
                 if sp.startswith('PYKAN') or sp.startswith('CKAN') or sp.endswith('GameData'):
                     continue
                 if sp in pathlist:
                     names_found[pathlist[sp]] = {'path':sp}
-                else:
-                    possible = list(self.repo.list_modules([filters.Filter(self.settings).regex],{"needle": '%s' %os.path.basename(sp)}))
-                    if possible:
-                        names_found[possible[0]['identifier']] = {'path':sp}
-                        break
+                #Would be nice to make a version of this work - but we aren't there now.
+                # else:
+                #     possible = list(self.repo.list_modules([filters.Filter(self.settings).regex],{"needle": '%s' %os.path.basename(sp)}))
+                #     if possible:
+                #         names_found[possible[0]['identifier']] = {'path':sp}
+                #         break
         #At this stage names_found should map every module we found to the paths we found it by.
         #Due to the ordering above, module directories take precedence over module files.
         #Now we need to try and determine the versions so we can match them to the correct repo entries.
