@@ -45,8 +45,10 @@ class Installed(object):
             return 'Installed (CKAN)'
         return 'Not installed'
 
-    def add_mod(self,identifier,repoentry,subrepo='installed_modules'):
+    def add_mod(self,identifier,repoentry,subrepo='installed_modules',files=[]):
         self.installed_mods[subrepo][identifier] = repoentry
+        if files:
+            self.installed_mods[subrepo][identifier]['installed_files'] = files
         util.SaveJsonToFile(self.installedListFile, self.installed_mods)
 
     def get_manual_mods(self):

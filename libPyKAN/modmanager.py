@@ -69,6 +69,7 @@ class ModManager(object):
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
             print "Installing module ",mod['identifier']
+            modfiles = []
             for target in mod.get('install',[{'PYKANBASIC':True,'install_to':'GameData'}]):
                 #self.clear_the_way(find,self.dest(target['install_to']),'find_regexp' in target,target.get('find_matches_files',False))
                 with zipfile.ZipFile(i[0],'r') as z:
@@ -84,7 +85,8 @@ class ModManager(object):
                             else:
                                 if '/%s/' %target['find'] in member.filename:
                                     mx = member.filename.split('/')
-                                    idx = mx.index(target['find'])
+                                    find = target['find'].split('/')[-1]
+                                    idx = mx.index(find)
                                     matched = '/'.join(mx[idx:])
                         elif 'find_regexp' in target:
                             r = re.findall(target['find_regexp'],member.filename)
@@ -114,12 +116,17 @@ class ModManager(object):
                             if member.filename.endswith('/'):
                                 util.debug('Creatinf directory %s' % dest)
                                 util.mkdir_p(dest)
+                                modfiles.append(dest)
                             else:
                                 #It sucks that the ZipFile.extract method can't do paths well enough
                                 #so we are forced to do this.
+                                if not os.path.exists(os.path.dirname(dest)):
+                                    modfiles.append(os.path.dirname(dest))
+                                    util.mkdir_p(os.path.dirname(dest))
                                 util.debug('Extracting file %s' % dest)
                                 open(dest,'w').write(z.open(member).read())
-                ins.add_mod(mod['identifier'],mod)
+                                modfiles.append(dest)
+                ins.add_mod(mod['identifier'],mod,files=modfiles)
 
 
     def get_download_list(self, recommends='ask', suggests='ask',blacklist=[]):

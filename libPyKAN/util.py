@@ -46,7 +46,7 @@ def __download_file__(dl_data):
     done = os.path.exists(filename) and shacheck(filename,dl_data['sha'])
     while not done and retries < dl_data['retries']:
         try:
-            r = requests.get(dl_data['uri'], stream=True,verify=False)
+            r = requests.get(dl_data['uri'], stream=True)
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024): 
                     if chunk: 

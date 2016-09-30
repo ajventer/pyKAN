@@ -21,15 +21,15 @@ Version 0.0.1-pre
 6. Detect manually installed mods
 7. Import list of modules installed by CKAN
 8. List installed modules, indicating how they were installed. 
+9. Install modules (optional override support for manual mods) with optional download-retries
 
 ##Todo:
-1. Install modules (optional override support for manual mods) with optional download-retries
-2. Uninstall modules
-3. Upgrade modules
-4. PyQT GUI for graphical usage
-5. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
-6. Optimize the O(N) and O(n*x) algorithms.
-7. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
+1. Uninstall modules
+2. Upgrade modules
+3. PyQT GUI for graphical usage
+4. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
+5. Optimize the O(N) and O(n*x) algorithms.
+6. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
 
 
 
