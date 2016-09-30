@@ -4,6 +4,7 @@ import json
 import os
 import glob
 import errno
+import RemoteException
 import hashlib
 import multiprocessing
 try:
@@ -35,16 +36,17 @@ def shacheck(filename, sha, failonmissing=True):
             return False
     return True
 
-
+@RemoteException.showError
 def __download_file__(dl_data):
     print 'Downloading %s' % dl_data['uri']
     before = dl_data['sha'] and dl_data['sha'][:8] or ''
     filename = os.path.join(dl_data['cachedir'],'%s_%s' %(before,os.path.basename(dl_data['uri'])))
+    print "Filename: %s" %filename
     retries = 0
     done = os.path.exists(filename) and shacheck(filename,dl_data['sha'])
     while not done and retries < dl_data['retries']:
         try:
-            r = requests.get(dl_data['uri'], stream=True)
+            r = requests.get(dl_data['uri'], stream=True,verify=False)
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024): 
                     if chunk: 
@@ -52,22 +54,15 @@ def __download_file__(dl_data):
                         sys.stdout.flush()
                         f.write(chunk)
                 done = True
+            if shacheck(filename,dl_data['sha'], False):
+                print
+                print "Warning: Sha hash for %s does not match repo data" % filename
         except Exception as e:
             retries += 1
+            if retries >=  dl_data['retries']:
+                raise           
             debug ('Download error %s. %s  retries remain' %(e, dl_data['retries'] - retries))
             done = False
-        if not shacheck(filename,dl_data['sha'], False):
-            #done = False
-            #retries += 1
-            #os.unlink(filename)
-            #CKAN data does not always match reality - and CKAN itself seems not to check these
-            #Except to trigger redownloads. So we're forced to do the same.
-            print
-            print "Warning: Sha hash for %s does not match repo data" % filename
-            # if retries >= dl_data['retries']:
-            #     print
-            #     print "Warning: Sha hash for %s does not match repo data" % filename
-                #raise IOError('Sha verification failed for %s' % dl_data['uri'])
     print
     if not dl_data['sha']:
         return filename

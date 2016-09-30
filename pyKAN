@@ -7,6 +7,10 @@ import argparse
 from argparse import RawTextHelpFormatter
 import sys
 import json
+if sys.version_info < (2, 7, 9):
+    print "WARNING ! Many upstream download servers required SNI verification."
+    print "Python does not support this in versions earlier than 2.7.9."
+    print "You will be unable to install mods hosted on these servers"
 
 
 
@@ -16,7 +20,7 @@ def select_menu(msg, options):
         print
         print msg
         for i in options:
-            print '%s: %s' %(options.index(i),i)
+            print '\t%s: %s' %(options.index(i),i)
 
         answer = raw_input('Choice:')
         valid_answer = answer.isdigit() and int(answer) >= 0 and int(answer) < len(options)
@@ -173,7 +177,10 @@ if __name__ == '__main__':
             answer = select_menu('Multiple mods match your search, please select one', mods.keys())
             mods = [mods[mods.keys()[answer]]]
         else:
-            modid = mods.keys()[0]
+            try:
+                modid = mods.keys()[0]
+            except IndexError:
+                util.error('Could not find mod %s' % options.module)
             mods = [mods[modid]]        
         while not done:
             done = True
@@ -196,7 +203,7 @@ if __name__ == '__main__':
                     done = False
                     owningmod,verb,modlist = str(e).split(':')
                     modlist = modlist.split(',')
-                    print '%s %s:\n%s' %(owningmod,verb,'\n'.join(modlist))
+                    print '%s %s:\n\t%s' %(owningmod,verb,'\n\t'.join(modlist))
                     answer = raw_input('Install these mods [y/n]')
                     if answer.lower().startswith('y'):
                         for m in modlist:
@@ -206,9 +213,7 @@ if __name__ == '__main__':
                         blacklist += modlist
                 else:
                     raise
-        print "About to install:"
-        for i in downloadlist:
-            print i
+        print "About to install:\n\t%s" %('\n\t'.join(downloadlist))
         answer = raw_input("Continue [y/n]")
         if not answer.lower().startswith('y'):
             sys.exit()
