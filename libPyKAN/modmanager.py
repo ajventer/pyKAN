@@ -64,12 +64,12 @@ class ModManager(object):
 
 
     def install(self):
-        ins = Installed(self.repo,self.settings)
+        ins = Installed(self.settings,self.repo)
         modlist = {}
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
             print "Installing module ",mod['identifier']
-            for target in mod['install']:
+            for target in mod.get('install',[{'PYKANBASIC':True,'install_to':'GameData'}]):
                 #self.clear_the_way(find,self.dest(target['install_to']),'find_regexp' in target,target.get('find_matches_files',False))
                 with zipfile.ZipFile(i[0],'r') as z:
                     for member in z.infolist():
@@ -91,7 +91,22 @@ class ModManager(object):
                             if r:
                                 mx = member.filename.split('/')
                                 idx = mx.index(r[0])
-                                matched = '/'.join(mx[idx:])   
+                                matched = '/'.join(mx[idx:])
+                        elif 'PYKANBASIC' in target:
+                            #This actually means CKAN didn't give us any instructions
+                            if 'GameData' in member.filename:
+                                util.debug('Found GameData in file path')
+                                #Sigh...really CKAN ? Really ? 
+                                mx = member.filename.split('/')
+                                idx = mx.index('GameData') +1
+                                matched = '/'.join(mx[idx:])
+                            else:
+                                #I really don't like this part
+                                #I can't believe ever uses hardcoded recipes
+                                #They have a structure for encoding the steps in the spec-  why not
+                                #use it consistently ?
+                                if member.filename.endswith('/'):
+                                    matched = member.filename
                         else:
                             continue
                         if matched:

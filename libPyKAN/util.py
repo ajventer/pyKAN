@@ -57,12 +57,17 @@ def __download_file__(dl_data):
             debug ('Download error %s. %s  retries remain' %(e, dl_data['retries'] - retries))
             done = False
         if not shacheck(filename,dl_data['sha'], False):
-            done = False
-            retries += 1
-            os.unlink(filename)
-            if retries >= dl_data['retries']:
-                print
-                raise IOError('Sha verification failed for %s' % dl_data['uri'])
+            #done = False
+            #retries += 1
+            #os.unlink(filename)
+            #CKAN data does not always match reality - and CKAN itself seems not to check these
+            #Except to trigger redownloads. So we're forced to do the same.
+            print
+            print "Warning: Sha hash for %s does not match repo data" % filename
+            # if retries >= dl_data['retries']:
+            #     print
+            #     print "Warning: Sha hash for %s does not match repo data" % filename
+                #raise IOError('Sha verification failed for %s' % dl_data['uri'])
     print
     if not dl_data['sha']:
         return filename
