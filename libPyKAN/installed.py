@@ -30,6 +30,17 @@ class Installed(object):
             for mod in self.installed_mods[i]:
                 yield mod
 
+    def __iter__(self):
+        for k in ['installed_modules','manual_modules','ckan_modules']:
+            for key in self.installed_mods[k]:
+                yield key
+
+
+    def __getitem__(self, key):
+        for k in ['installed_modules','manual_modules','ckan_modules']:
+            if key in self.installed_mods[k]:
+                return self.installed_mods[k][key]
+
     def list_modules(self):
         for i in ['installed_modules','manual_modules','ckan_modules']:
             for mod in self.installed_mods[i]:

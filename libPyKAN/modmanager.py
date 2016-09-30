@@ -60,7 +60,7 @@ class ModManager(object):
                     fname = os.path.join(root,f)
                     if f == find or is_regex and re.findall(find,fname):
                         util.debug('Clearing file %s' % fname)
-                        os.unlink(fname)        
+                        os.unlink(fname)
 
 
     def install(self):
@@ -127,6 +127,26 @@ class ModManager(object):
                                 open(dest,'w').write(z.open(member).read())
                                 modfiles.append(dest)
                 ins.add_mod(mod['identifier'],mod,files=modfiles)
+
+    def uninstall_list(self):
+        ins = Installed(self.settings,self.repo)
+        remlist = []
+        for mod in self.repoentries:
+            remlist.append(mod['identifier'])
+        to_del = True
+        while to_del:
+            to_del = []
+            for mod in remlist:
+                for i in ins:
+                    if i in remlist:
+                        continue
+                    for dep in ins[i].get('depends',[]):
+                        if dep['name'] == mod:
+                            to_del.append(i)
+            remlist += to_del
+        remlist = list(set(remlist))
+        return remlist
+
 
 
     def get_download_list(self, recommends='ask', suggests='ask',blacklist=[]):

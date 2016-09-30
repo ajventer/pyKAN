@@ -30,6 +30,7 @@ Version 0.0.1-pre
 4. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
 5. Optimize the O(N) and O(n*x) algorithms.
 6. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
+7. Import of CKAN installed list should also import filelist.
 
 
 

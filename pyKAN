@@ -223,6 +223,21 @@ if __name__ == '__main__':
         print "Installing modules"
         MM.install()
 
+    def uninstall_mod():
+        if not options.module:
+            util.error('Must specify --module with uninstall')        
+        mods = repo.find_latest(options.module)
+        if len(mods) > 1:
+            answer = select_menu('Multiple mods match your search, please select one', mods.keys())
+            mods = [mods[mods.keys()[answer]]]
+        else:
+            try:
+                modid = mods.keys()[0]
+            except IndexError:
+                util.error('Could not find mod %s' % options.module)
+            mods = [mods[modid]] 
+        MM = ModManager(mods, settings,repo)
+        print"About to remove: \n\t%s" %('\n\t'.join(MM.uninstall_list()))
 
 
     actions = {
@@ -238,7 +253,8 @@ if __name__ == '__main__':
         'update': {'method':update, 'help': 'Update the mod data from the repositories'},
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
         'show': {'method': show_module, 'help':'Show full details on a particular module. Needs --module option.'},        
-        'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'}
+        'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'},
+        'uninstall': {'method': uninstall_mod, 'help': 'Remove a module. Needs --module option.'}
     }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
