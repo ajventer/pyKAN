@@ -8,19 +8,19 @@ import os
 import util
 import copy
 import version
+import sys
 
 class PyKANSettings(object):
     def __init__(self, KSPDIR=None):
         self.SharedSettingsFile = os.path.join(os.getenv('HOME'),'.pykan.json')
         self.SharedSettings = {'KSPDIRS': [],"DownLoadRetryMax": 1}
         steamKSPDir = os.path.join(os.getenv('HOME'),'.steam','steamapps','common','Kerbal Space Program')
-        if KSPDIR is None and util.is_kspdir(steamKSPDir):
-            util.debug('Found steam KSPdir')
-            KSPDIR=steamKSPDir
-            self.SharedSettings['KSPDIRS'].append(steamKSPDir)
         self.SharedSettings = util.ReadJsonFromFile(self.SharedSettingsFile, self.SharedSettings, create=True)
+        if KSPDIR is None and util.is_kspdir(steamKSPDir) and not self.SharedSettings['KSPDIRS']:
+            util.debug('Found steam KSPdir')
+            self.SharedSettings['KSPDIRS'].append(steamKSPDir)        
         self.KSPSettings={'Repos':[util.default_ckan_repo]}
-        if not KSPDIR and len(self.SharedSettings['KSPDIRS']):
+        if KSPDIR is None and self.SharedSettings['KSPDIRS']:
             KSPDIR=self.SharedSettings['KSPDIRS'][0]
         if KSPDIR:
             util.debug('Found KSP directory')

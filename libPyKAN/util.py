@@ -31,24 +31,25 @@ def shacheck(filename, sha, failonmissing=True):
         else: #Sha1
             hashobj = hashlib.sha1(text)
         if hashobj.hexdigest().upper() !=sha.upper():
-            print 'Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), dl_data['sha'].upper())
+            print 'Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), sha.upper())
             return False
     return True
 
 
 def __download_file__(dl_data):
-    debug('Downloading %s' % dl_data['uri'])
+    print 'Downloading %s' % dl_data['uri']
     before = dl_data['sha'] and dl_data['sha'][:8] or ''
     filename = os.path.join(dl_data['cachedir'],'%s_%s' %(before,os.path.basename(dl_data['uri'])))
     retries = 0
     done = os.path.exists(filename) and shacheck(filename,dl_data['sha'])
     while not done and retries < dl_data['retries']:
         try:
-            r = requests.get(dl_data['uri'], stream=True,verify=False)
+            r = requests.get(dl_data['uri'], stream=True)
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024): 
                     if chunk: 
-                        debug_n('#')
+                        sys.stdout.write('#')
+                        sys.stdout.flush()
                         f.write(chunk)
                 done = True
         except Exception as e:
@@ -60,9 +61,9 @@ def __download_file__(dl_data):
             retries += 1
             os.unlink(filename)
             if retries >= dl_data['retries']:
+                print
                 raise IOError('Sha verification failed for %s' % dl_data['uri'])
- 
-    debug('')
+    print
     if not dl_data['sha']:
         return filename
     else:

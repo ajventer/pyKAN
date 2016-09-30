@@ -212,8 +212,10 @@ if __name__ == '__main__':
         answer = raw_input("Continue [y/n]")
         if not answer.lower().startswith('y'):
             sys.exit()
+        print "Downloading module%s" %(len(downloadlist) > 1 and 's' or '')
         modfiles = MM.download()
         util.debug(modfiles)
+        print "Installing modules"
         MM.install()
 
 
@@ -284,6 +286,7 @@ if __name__ == '__main__':
 
         INSTALLED = Installed(settings,repo)
 
-    settings.reload()
+        settings.reload()
+        print "Using KSP Directory: ",settings.KSPDIR
 
     actions[options.action]['method']()

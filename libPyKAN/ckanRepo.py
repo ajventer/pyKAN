@@ -134,8 +134,6 @@ class CkanRepo(object):
                     if not f(self.repodata[i],**filterargs):
                         valid=False
                         break
-                    else:
-                        util.debug('Found: %s,%s | %s' %(f,filterargs,self.repodata[i]))
                 if valid:
                     yield self.repodata[i]
 
