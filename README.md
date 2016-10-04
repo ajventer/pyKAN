@@ -22,16 +22,16 @@ Version 0.0.1-pre
 7. Import list of modules installed by CKAN
 8. List installed modules, indicating how they were installed. 
 9. Install modules (optional override support for manual mods) with optional download-retries
+10. Uninstall modules
+11. Upgrade modules
 
 ##Todo:
-1. Uninstall modules
-2. Upgrade modules
-3. PyQT GUI for graphical usage
-4. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
-5. Optimize the O(N) and O(n*x) algorithms.
-6. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
-7. Import of CKAN installed list should also import filelist.
-8. Make code python3 compatible so the script is version agnostic.
+1. PyQT GUI for graphical usage
+2. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
+3. Optimize the O(N) and O(n*x) algorithms.
+4. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
+5. Import of CKAN installed list should also import filelist.
+6. Make code python3 compatible so the script is version agnostic.
 
 
 
