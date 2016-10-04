@@ -194,11 +194,15 @@ class ModManager(object):
             count += 1
             to_add = {}
             for mod in dl_list.values():
-                conflicts = [i['name'] for i in mod.get('conflicts',[]) if i in self.installed.all_modnames()]
+                if mod is None:
+                    continue
+                modconflicts = mod.get('conflicts',[])
+                conflicts = modconflicts and [i.get('identifier','') for i in modconflicts if i in self.installed.all_modnames()] or []
+                util.debug(conflicts)
                 if conflicts:
                     raise ConflictException('Required mod %s conflicts with installed mod(s): %s' % (mod,','.join(conflicts)))
                 for key in searchkeys:
-                    if key in mod:
+                    if key in mod and mod[key] is not None:
                         thiskey = {}
                         for m in mod[key]:
                             sys.stdout.write('.')
