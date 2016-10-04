@@ -78,18 +78,19 @@ class ModManager(object):
                     for member in z.infolist():
                         util.debug(member.filename)
                         matched = False
-                        if 'file' in target and member.filename.endswith(target['file']):
+                        if 'file' in target and target['file'] in member.filename:
                            matched = os.path.basename(member.filename)
                         elif 'find' in target:
                             if target.get('find_matches_files', False):
                                 if member.filename.endswith(target['find']):
                                     matched = target['find']
                             else:
-                                if '/%s/' %target['find'] in member.filename:
+                                if '%s' %target['find'] in member.filename.split('/'):
                                     mx = member.filename.split('/')
                                     find = target['find'].split('/')[-1]
                                     idx = mx.index(find)
                                     matched = '/'.join(mx[idx:])
+
                         elif 'find_regexp' in target:
                             r = re.findall(target['find_regexp'],member.filename)
                             if r:
