@@ -148,7 +148,24 @@ class ModManager(object):
                             to_del.append(i)
             remlist += to_del
         remlist = list(set(remlist))
+
         return remlist
+
+    def remove(self, modname):
+        target = os.path.join(self.settings.KSPDIR,'GameData',modname)
+        filelist = self.installed[modname].get('installed_files',[])
+        if filelist:
+            for file in filelist:
+                util.debug('Removing %s' % file)
+                if os.path.exists(file):
+                    if os.path.isdir(file):
+                        shutil.rmtree(file)
+                    else:
+                        os.unlink(file)
+        if os.path.isdir(target):
+            util.debug('Removing %s' % target)
+            shutil.rmtree(target)
+        self.installed.remove_mod(modname)
 
 
 

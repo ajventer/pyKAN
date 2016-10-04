@@ -34,6 +34,11 @@ def select_menu(msg, options):
             print "\nError. Invalid choice. Please try again"
     return answer
 
+def confirm(msg='Continue [y/n]'):
+        answer = raw_input("Continue [y/n]")
+        return answer.lower().startswith('y') 
+
+
 
 if __name__ == '__main__':
     def show_settings():
@@ -214,8 +219,7 @@ if __name__ == '__main__':
                 else:
                     raise
         print "About to install:\n\t%s" %('\n\t'.join(downloadlist))
-        answer = raw_input("Continue [y/n]")
-        if not answer.lower().startswith('y'):
+        if not confirm():
             sys.exit()
         print "Downloading module%s" %(len(downloadlist) > 1 and 's' or '')
         modfiles = MM.download()
@@ -237,8 +241,13 @@ if __name__ == '__main__':
                 util.error('Could not find mod %s' % options.module)
             mods = [mods[modid]] 
         MM = ModManager(mods, settings,repo)
-        print"About to remove: \n\t%s" %('\n\t'.join(MM.uninstall_list()))
-
+        remlist = MM.uninstall_list()
+        print"About to remove: \n\t%s" %('\n\t'.join(remlist))
+        if not confirm():
+            sys.exit()
+        for mod in remlist:
+            print "Uninstalling %s" % mod
+            MM.remove(mod)
 
     actions = {
         'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},

@@ -62,6 +62,14 @@ class Installed(object):
             self.installed_mods[subrepo][identifier]['installed_files'] = files
         util.SaveJsonToFile(self.installedListFile, self.installed_mods)
 
+    def remove_mod(self,identifier):
+        for k in ['installed_modules','manual_modules','ckan_modules']:
+            if identifier in self.installed_mods[k]:
+                del(self.installed_mods[k][identifier])
+        util.SaveJsonToFile(self.installedListFile, self.installed_mods)
+
+
+
     def get_manual_mods(self):
         self.installed_mods['manual_modules'] = {}
         util.debug('Searching for manually installed mods')
