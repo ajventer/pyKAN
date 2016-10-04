@@ -67,7 +67,6 @@ class ModManager(object):
 
 
     def install(self):
-        ins = Installed(self.settings,self.repo)
         modlist = {}
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
@@ -129,7 +128,7 @@ class ModManager(object):
                                 util.debug('Extracting file %s' % dest)
                                 open(dest,'w').write(z.open(member).read())
                                 modfiles.append(dest)
-                ins.add_mod(mod['identifier'],mod,files=modfiles)
+                self.installed.add_mod(mod['identifier'],mod,files=modfiles)
 
     def uninstall_list(self):
         ins = Installed(self.settings,self.repo)
@@ -152,6 +151,7 @@ class ModManager(object):
         return remlist
 
     def remove(self, modname):
+        print "Removing module %s" % modname
         target = os.path.join(self.settings.KSPDIR,'GameData',modname)
         filelist = self.installed[modname].get('installed_files',[])
         if filelist:
@@ -167,6 +167,12 @@ class ModManager(object):
             shutil.rmtree(target)
         self.installed.remove_mod(modname)
 
+    def upgrade(self):
+        for mod in [i['identifier'] for i in self.repoentries]:
+            self.remove(mod)
+        self.get_download_list()
+        self.download()
+        self.install()        
 
 
     def get_download_list(self, recommends='ask', suggests='ask',blacklist=[]):

@@ -137,6 +137,9 @@ if __name__ == '__main__':
         filtermethods = [f.compatible]
         filterargs = {}
         result = {}
+        if options.upgradeable:
+            upgradeable()
+            return
         if options.installed:
             for i in INSTALLED.list_modules():
                 print '%s:  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status'])
@@ -183,7 +186,7 @@ if __name__ == '__main__':
             mods = [mods[mods.keys()[answer]]]
         else:
             try:
-                modid = mods.keys()[0]
+                modid = list(mods.keys())[0]
             except IndexError:
                 util.error('Could not find mod %s' % options.module)
             mods = [mods[modid]]        
@@ -197,7 +200,7 @@ if __name__ == '__main__':
                     modlist = str(e).split(',')
                     answer = select_menu('Multiple mods provide a required download, please select one', modlist)
                     choice = modlist[answer]
-                    for m in repo.find_latest(choice).values():
+                    for m in list(repo.find_latest(choice).values()):
                         mods.append(m)
                     done = False
                 elif isinstance(e,MissingDependencyException):
@@ -240,6 +243,8 @@ if __name__ == '__main__':
             except IndexError:
                 util.error('Could not find mod %s' % options.module)
             mods = [mods[modid]] 
+        if not modid in INSTALLED.all_modnames():
+            util.error('Cannot uninstall %s as it is not installed' %modid)
         MM = ModManager(mods, settings,repo)
         remlist = MM.uninstall_list()
         print"About to remove: \n\t%s" %('\n\t'.join(remlist))
@@ -248,6 +253,27 @@ if __name__ == '__main__':
         for mod in remlist:
             print "Uninstalling %s" % mod
             MM.remove(mod)
+
+    def upgradeable():
+        if options.module:
+            mods = [i for i in repo.find_latest(options.module) if i in INSTALLED.all_modnames()]
+        else:
+            mods = INSTALLED.all_modnames()
+        upgradeables = []
+        for mod in mods:
+            if Version(repo.find_latest(mod).get('version','0.0.0')) > Version(INSTALLED[mod].get('version','0.0.0')):
+                upgradeables.append(mod)
+        print "Mods that can be upgraded: \n\t%s"  %('\n\t'.join(upgradeables))
+        return upgradeables
+
+    def upgrade():
+        uplist = [INSTALLED[i] for i in upgradeable()]
+        if not confirm():
+            sys.exit()
+        MM = ModManager(uplist, settings,repo)
+        MM.upgrade()
+        print "Modules upgraded"
+
 
     actions = {
         'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
@@ -263,6 +289,7 @@ if __name__ == '__main__':
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
         'show': {'method': show_module, 'help':'Show full details on a particular module. Needs --module option.'},        
         'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'},
+        'upgrade': {'method': upgrade, 'help': 'Upgrade modules. If --module is not given, upgrade all installed modules to latest version.'},
         'uninstall': {'method': uninstall_mod, 'help': 'Remove a module. Needs --module option.'}
     }
 
@@ -277,7 +304,8 @@ if __name__ == '__main__':
     parser.add_argument('--allmods',action='store_true',help="Show the module list without any filters. Use with list_modules.")
     parser.add_argument('--search',type=str,default=None,help="Search for module by regular expression. Use with list_modules.")
     parser.add_argument('--allversions',action='store_true',help="Show the all versions of mods. Default is to only show the highest version. Use with list_modules.")
-    parser.add_argument('--installed',action='store_true',help="Show only installed modules. Use with list_modules..")
+    parser.add_argument('--installed',action='store_true',help="Show only installed modules. Use with list_modules.")
+    parser.add_argument('--upgradeable',action='store_true',help="Show installed mods with upgrades available. Use with list_modules.")
     parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions. Use with list_modules.')
     parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version. Use with list_modules.')
     parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with show,install, uninstall and upgrade.')
