@@ -151,7 +151,7 @@ class ModManager(object):
 
         return remlist
 
-    def remove(self, modname):
+    def remove(self, modname, deregister=True):
         print "Removing module %s" % modname
         target = os.path.join(self.settings.KSPDIR,'GameData',modname)
         filelist = self.installed[modname].get('installed_files',[])
@@ -166,12 +166,13 @@ class ModManager(object):
         if os.path.isdir(target):
             util.debug('Removing %s' % target)
             shutil.rmtree(target)
-        self.installed.remove_mod(modname)
+        if deregister:
+            self.installed.remove_mod(modname)
 
     def upgrade(self):
         for mod in [i['identifier'] for i in self.repoentries]:
-            self.remove(mod)
-        self.get_download_list()
+            self.remove(mod, False)
+        self.get_download_list('no','no')
         self.download()
         self.install()        
 

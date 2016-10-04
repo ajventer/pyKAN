@@ -40,6 +40,7 @@ class Installed(object):
         for k in ['installed_modules','manual_modules','ckan_modules']:
             if key in self.installed_mods[k]:
                 return self.installed_mods[k][key]
+        raise KeyError
 
     def list_modules(self):
         for i in ['installed_modules','manual_modules','ckan_modules']:

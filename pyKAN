@@ -258,12 +258,16 @@ if __name__ == '__main__':
         if options.module:
             mods = [i for i in repo.find_latest(options.module) if i in INSTALLED.all_modnames()]
         else:
-            mods = INSTALLED.all_modnames()
+            mods = list(INSTALLED.all_modnames())
         upgradeables = []
         for mod in mods:
-            if Version(repo.find_latest(mod).get('version','0.0.0')) > Version(INSTALLED[mod].get('version','0.0.0')):
+            m = repo.find_latest(mod)[mod]
+            print m.get('version')
+            if Version(m.get('version','0.0.0')) > Version(INSTALLED[mod].get('version','0.0.0')):
                 upgradeables.append(mod)
-        print "Mods that can be upgraded: \n\t%s"  %('\n\t'.join(upgradeables))
+        print "Mods that can be upgraded: \n"  
+        for u in upgradeables:
+            print '\t%s %s -> %s' %(u,INSTALLED[mod].get('version','0.0.0'),repo.find_latest(u).get('version','0.0.0'))
         return upgradeables
 
     def upgrade():
@@ -272,6 +276,7 @@ if __name__ == '__main__':
             sys.exit()
         MM = ModManager(uplist, settings,repo)
         MM.upgrade()
+
         print "Modules upgraded"
 
 
