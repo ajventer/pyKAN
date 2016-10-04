@@ -21,6 +21,9 @@ class MissingDependencyException(Exception):
 class ConfirmException(Exception):
     pass    
 
+class ConflictException(Exception):
+    pass    
+
 
 class ModManager(object):
     def __init__(self, repoentries, settings, repo):
@@ -167,6 +170,9 @@ class ModManager(object):
             count += 1
             to_add = {}
             for mod in dl_list.values():
+                conflicts = [i['name'] for i in mod.get('conflicts',[]) if i in self.installed.all_modnames()]
+                if conflicts:
+                    raise ConflictException('Required mod %s conflicts with installed mod(s): %s' % (mod,','.join(conflicts)))
                 for key in searchkeys:
                     if key in mod:
                         thiskey = {}
