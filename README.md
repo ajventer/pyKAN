@@ -34,5 +34,5 @@ Version 0.0.1-pre
 6. Make code python3 compatible so the script is version agnostic.
 
 
-Written by:
+##Written by:
 A.J. Venter (metalpoetza on reddit).
