@@ -32,6 +32,10 @@ Version 0.0.1-pre
 4. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
 5. Import of CKAN installed list should also import filelist.
 6. Make code python3 compatible so the script is version agnostic.
+7. Consider using a Linter for your source (I'd recommend flake8)
+8. Consider using the logging module rather than a DEBUG flag
+9. Consider documenting at all levels (package, module, class, function) using a known doc style (Plain, Epytext, restructuredText, Numpy, Google, etc.)
+10. [very optional] Consider using type hints (a.k.a PEP 484) or even the typing module (see also PEP 526) if you switch to python3.
 
 
 ##Written by:
