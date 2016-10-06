@@ -39,6 +39,8 @@ class Version(object):
                 #But extra leading zeroes screw things up
                 while i.startswith('0') and len(i) > 1:
                     i = i[1:]
+                if i == '.':
+                    continue
                 self.versionlist.append(i)
 
     def numpart(self,s):
