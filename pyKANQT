@@ -1,2 +1,2 @@
-#!/usr/bin/env python
-print "The GUI version does not exist yes. This will work in future"
+#!/usr/bin/env python3
+print("The GUI version does not exist yes. This will work in future")
