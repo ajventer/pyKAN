@@ -1,6 +1,6 @@
 #Class that implements various module list filters.
 import re
-from version import Version
+from .version import Version
 
 class Filter(object):
     def __init__(self,settings):
