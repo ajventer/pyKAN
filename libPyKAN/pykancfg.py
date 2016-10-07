@@ -5,9 +5,9 @@
 
 import json
 import os
-import util
+from . import util
 import copy
-import version
+from . import version
 import sys
 
 class PyKANSettings(object):
@@ -56,7 +56,7 @@ class PyKANSettings(object):
 
     def flatsettings(self):
         settings = {}
-        for k, v in self.__allsettings__().items():
+        for k, v in list(self.__allsettings__().items()):
             if not isinstance(v, list) or isinstance(v, dict):
                 settings[k] = v
         return settings
@@ -120,7 +120,7 @@ class PyKANSettings(object):
             yield (k)
 
     def items(self):
-        for k,v in self.__allsettings__().items():
+        for k,v in list(self.__allsettings__().items()):
             yield (k,v)
 
     def __contains__(self, item):
