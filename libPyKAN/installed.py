@@ -1,10 +1,10 @@
 #Abstracts the list of installed modules.
-import util
+from . import util
 import os
-import filters
+from . import filters
 import re
 import glob
-from version import Version
+from .version import Version
 
 
 

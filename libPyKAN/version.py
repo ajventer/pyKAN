@@ -1,5 +1,5 @@
 #Generic datatype for version information
-import util
+from . import util
 import re
 
 class Version(object):

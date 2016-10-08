@@ -1,8 +1,8 @@
 import sys
 import traceback
-import StringIO
+import io
 
-from copy_reg import dispatch_table, pickle
+from copyreg import dispatch_table, pickle
 
 def exc_info(hide_calls = 0):
     '''as sys.exc_info() but returns a remote exception object'''
@@ -17,7 +17,7 @@ def withTracebackPrint(ErrorType, thrownError, _traceback):
     '''returns an Exception object for the given ErrorType of the thrownError
 and the _traceback
 can be used like withTracebackPrint(*sys.exc_info())'''
-    file = StringIO.StringIO()
+    file = io.StringIO()
     traceback.print_exception(ErrorType, thrownError, _traceback, file = file)
     return _loadError(ErrorType, thrownError, file.getvalue())
     ## why don't we just use the following line?
@@ -92,7 +92,7 @@ def showError(function):
             return function(*args, **kw)
         except:
             type, error, traceback = exc_info(1)
-            raise type, error, traceback
+            raise type(error).with_traceback(traceback)
     functionShowingTheError.__name__ = function.__name__
     functionShowingTheError.__module__ = function.__module__
     return functionShowingTheError
@@ -108,6 +108,6 @@ if __name__ == '__main__':
     import multiprocessing
     p = multiprocessing.Pool(processes = 2)
     r = p.apply_async(_testError)
-    print(r.get(1))
+    print((r.get(1)))
     
 __all__ = ['withTracebackPrint', 'asRemoteException', 'exc_info', 'showError']

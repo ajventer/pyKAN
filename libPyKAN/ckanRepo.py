@@ -1,12 +1,12 @@
-import util
+from . import util
 import json
 import os
 import glob
 import tarfile
 import glob
-from installed import Installed
-from filters import Filter
-from version import Version
+from .installed import Installed
+from .filters import Filter
+from .version import Version
 
 class CkanRepo(object):
     def __init__(self,settings):
@@ -31,7 +31,7 @@ class CkanRepo(object):
         return util.ReadJsonFromFile(RepoListFile)['repositories']
 
     def update_repository_data(self):
-        print "Downloading updated repositories"
+        print("Downloading updated repositories")
         RepoListFile = os.path.join(self.settings.KSPDIR,'PYKAN','repolist.json')
         util.SaveJsonToFile(RepoListFile,util.download_json(util.repository_list))
         uris = []
@@ -40,10 +40,10 @@ class CkanRepo(object):
         repofiles = util.download_files(uris, 
             self.cachedir, 
             self.settings['DownLoadRetryMax'])
-        print "Parsing repository contents"
+        print("Parsing repository contents")
         self.read_repository_data(True)
         ins = Installed(self.settings,self)
-        print "Updating list of installed modules"
+        print("Updating list of installed modules")
         ins.import_ckan()
         ins.get_manual_mods()
 
