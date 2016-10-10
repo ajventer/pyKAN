@@ -80,11 +80,12 @@ class CkanRepo(object):
                     util.debug('%s is not a tarfile -skipping' % repofile)
                     continue
                 tar = tarfile.open(repofile,'r:*')
+
                 for tarinfo in tar:
                     util.debug("%s | %s" %(tarinfo.name,tarinfo.isreg() and 'file' or tarinfo.isdir() and'directory' or 'other'))
                     if tarinfo.isreg():
                         try:
-                            entrydata = json.loads(str(tar.extractfile(tarinfo).read()))
+                            entrydata = json.loads(str(tar.extractfile(tarinfo).read(),'utf-8'))
                             util.debug(json.dumps(entrydata, indent=4))
                             if not 'identifier' in entrydata:
                                 if 'name' in entrydata:

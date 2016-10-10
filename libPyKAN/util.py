@@ -98,7 +98,7 @@ def SaveJsonToFile(filename,data):
 
 def ReadJsonFromFile(filename, default=None,create=False):
     if default == None:
-        return json.loads(open(filename).read())
+        return json.loads(str(open(filename).read()))
     else:
         try:
             return ReadJsonFromFile(filename)
