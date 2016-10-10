@@ -148,7 +148,6 @@ class ModManager(object):
                             to_del.append(i)
             remlist += to_del
         remlist = list(set(remlist))
-
         return remlist
 
     def remove(self, modname, deregister=True):

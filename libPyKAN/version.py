@@ -19,7 +19,10 @@ class Version(object):
         """
         versionlist = []
         if len(args) == 1 and isinstance(args[0],str):
-            versionlist = args[0].split('.')
+            vstring = args[0]
+            if vstring.startswith('v') or vstring.startswith('V'):
+                vstring = vstring[1:]
+            versionlist = vstring.split('.')
         elif len(args) == 1:
             try:
             #If input is a list, tuple or other enumerable
