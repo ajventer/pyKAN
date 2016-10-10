@@ -16,6 +16,7 @@ class PyKANSettings(object):
         self.SharedSettings = {'KSPDIRS': [],"DownLoadRetryMax": 1}
         steamKSPDir = os.path.join(os.getenv('HOME'),'.steam','steamapps','common','Kerbal Space Program')
         self.SharedSettings = util.ReadJsonFromFile(self.SharedSettingsFile, self.SharedSettings, create=True)
+        self.KSPDIR = None
         if KSPDIR is None and util.is_kspdir(steamKSPDir) and not self.SharedSettings['KSPDIRS']:
             util.debug('Found steam KSPdir')
             self.SharedSettings['KSPDIRS'].append(steamKSPDir)        
@@ -66,8 +67,9 @@ class PyKANSettings(object):
 
     def save(self):
         util.SaveJsonToFile(self.SharedSettingsFile,self.SharedSettings)
-        util.mkdir_p(os.path.dirname(self.KSPSettingsFile))
-        util.SaveJsonToFile(self.KSPSettingsFile,self.KSPSettings)
+        if self.KSPDIR:
+            util.mkdir_p(os.path.dirname(self.KSPSettingsFile))
+            util.SaveJsonToFile(self.KSPSettingsFile,self.KSPSettings)
 
     def addkspdir(self,kspdir):
         util.debug('Added %s to KSPDIRS and set to default')

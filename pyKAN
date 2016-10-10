@@ -261,7 +261,6 @@ if __name__ == '__main__':
             mods = list(INSTALLED.all_modnames())
         upgradeables = []
         for mod in mods:
-<<<<<<< HEAD
             m = repo.find_latest(mod)
             m = mod in m and m[mod] or m
             if not m:
@@ -271,20 +270,11 @@ if __name__ == '__main__':
             if v1 > v2:
                 upgradeables.append((mod,v1,v2))
         upgradeables = list(set(upgradeables))
-        print "Mods that can be upgraded: \n"  
+        print ("Mods that can be upgraded: \n"  )
         for u in upgradeables:
-            print '\t%s %s -> %s' %(u[0],u[2],u[1])
+            print ('\t%s %s -> %s' %(u[0],u[2],u[1]))
         return [i[0] for i in upgradeables]
-=======
-            m = repo.find_latest(mod)[mod]
-            print(m.get('version'))
-            if Version(m.get('version','0.0.0')) > Version(INSTALLED[mod].get('version','0.0.0')):
-                upgradeables.append(mod)
-        print("Mods that can be upgraded: \n")  
-        for u in upgradeables:
-            print('\t%s %s -> %s' %(u,INSTALLED[mod].get('version','0.0.0'),repo.find_latest(u).get('version','0.0.0')))
-        return upgradeables
->>>>>>> 22980d46cc49660e5c79d9329337770e5179066f
+
 
     def upgrade():
         uplist = [INSTALLED[i] for i in upgradeable()]
