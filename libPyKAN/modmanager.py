@@ -1,12 +1,12 @@
 #Class implementing all module management methods. Install, uninstall, upgrade.
-from installed import Installed
-from version import Version
-import util
+from .installed import Installed
+from .version import Version
+from . import util
 import sys
 import os
 import re
 import zipfile
-from installed import Installed
+from .installed import Installed
 import shutil #Warning to windows porters - not sure how well this works on windows
 
 #These exceptions are used as callbacks to alert calling applications that we need human input
@@ -70,7 +70,7 @@ class ModManager(object):
         modlist = {}
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
-            print "Installing module ",mod['identifier']
+            print("Installing module ",mod['identifier'])
             modfiles = []
             for target in mod.get('install',[{'PYKANBASIC':True,'install_to':'GameData'}]):
                 #self.clear_the_way(find,self.dest(target['install_to']),'find_regexp' in target,target.get('find_matches_files',False))
@@ -152,7 +152,7 @@ class ModManager(object):
         return remlist
 
     def remove(self, modname, deregister=True):
-        print "Removing module %s" % modname
+        print("Removing module %s" % modname)
         target = os.path.join(self.settings.KSPDIR,'GameData',modname)
         filelist = self.installed[modname].get('installed_files',[])
         if filelist:
@@ -194,7 +194,7 @@ class ModManager(object):
         while to_add:
             count += 1
             to_add = {}
-            for mod in dl_list.values():
+            for mod in list(dl_list.values()):
                 if mod is None:
                     continue
                 modconflicts = mod.get('conflicts',[])
@@ -214,20 +214,20 @@ class ModManager(object):
                             if len(found) > 1:
                                 fnd = [i for i in found if i in dl_list or i in self.installed.all_modnames()]
                                 if not fnd:
-                                    raise MultiProviderException(','.join(found.keys()))
+                                    raise MultiProviderException(','.join(list(found.keys())))
                                 else:
                                     found = fnd
                             for f in found:
                                 if f not in dl_list and f not in self.installed.all_modnames() and not f in blacklist:
                                     thiskey[f] = found[f]
                         if thiskey and ((key == 'suggests' and suggests=='ask') or (key == 'recommends' and recommends =='ask')):
-                            raise ConfirmException('%s:%s:%s' %(mod['identifier'],key,','.join(thiskey.keys())))
+                            raise ConfirmException('%s:%s:%s' %(mod['identifier'],key,','.join(list(thiskey.keys()))))
                         to_add.update(thiskey)
             dl_list.update(to_add)
         # self.repoentries = []
         # for mod in dl_list:
         #     self.repoentries.append(mod)
-        print
+        print()
         self.repoentries = []
         for mod in dl_list:
             self.repoentries.append(dl_list[mod])
