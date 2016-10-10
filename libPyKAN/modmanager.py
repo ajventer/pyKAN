@@ -127,7 +127,7 @@ class ModManager(object):
                                     modfiles.append(os.path.dirname(dest))
                                     util.mkdir_p(os.path.dirname(dest))
                                 util.debug('Extracting file %s' % dest)
-                                open(dest,'w').write(z.open(member).read())
+                                open(dest,'wb').write(z.open(member).read())
                                 modfiles.append(dest)
                 self.installed.add_mod(mod['identifier'],mod,files=modfiles)
 

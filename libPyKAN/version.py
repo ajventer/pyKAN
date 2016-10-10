@@ -1,7 +1,9 @@
 #Generic datatype for version information
 from . import util
 import re
+from functools import total_ordering
 
+@total_ordering
 class Version(object):
     def __init__(self,*args):
         """
@@ -68,7 +70,7 @@ class Version(object):
             return 0
         if str(self) == 'any' or str(other) == 'any':
             return 0
-        if len(other.versionlist) > self.versionlist:
+        if len(other.versionlist) > len(self.versionlist):
             return other.__cmp__(self)
         for c,i in enumerate(self.versionlist):
             try:
@@ -93,10 +95,16 @@ class Version(object):
                 return -1
         return 0
 
+    def __lt__(self,other):
+        util.debug('Comparing %s to %s' %(self,other))
+        return self.__cmp__(other) < 0
+
+    def __eq__(self,other):
+        util.debug('Comparing %s to %s' %(self,other))
+        return self.__cmp__(other) == 0
+
     def __str__(self):
         return '.'.join(self.versionlist)
-
-
 
     def __getitem__(self, key):
         return self.versionlist[key]
