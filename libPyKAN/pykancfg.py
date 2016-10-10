@@ -14,7 +14,7 @@ class PyKANSettings(object):
     def __init__(self, KSPDIR=None):
         self.SharedSettingsFile = os.path.join(os.getenv('HOME'),'.pykan.json')
         self.SharedSettings = {'KSPDIRS': [],"DownLoadRetryMax": 1}
-        steamKSPDir = os.path.join(os.getenv('HOME'),'.steam','steamapps','common','Kerbal Space Program')
+        steamKSPDir = os.path.join(os.getenv('HOME'),'.local','share','Steam','steamapps','common','Kerbal Space Program')
         self.SharedSettings = util.ReadJsonFromFile(self.SharedSettingsFile, self.SharedSettings, create=True)
         self.KSPDIR = None
         if KSPDIR is None and util.is_kspdir(steamKSPDir) and not self.SharedSettings['KSPDIRS']:
@@ -33,7 +33,9 @@ class PyKANSettings(object):
                 v = None
                 if self.KSPSettings.get(i,None) == None:
                     util.debug('%s is not set - parsing KSP readme.txt')
-                    for line in open(os.path.join(KSPDIR,'readme.txt')).readlines():
+                    data = open(os.path.join(KSPDIR,'readme.txt'),'rb').read()
+                    d = str(data)
+                    for line in d.split('\\n'):
                         if line.startswith('Version'):
                             v = str(version.Version(line.split()[1]))
                             util.debug('Found value for %s: %s' %(i,v))
