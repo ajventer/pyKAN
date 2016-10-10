@@ -4,7 +4,6 @@ import json
 import os
 import glob
 import errno
-from . import RemoteException
 import hashlib
 import multiprocessing
 try:
@@ -36,7 +35,6 @@ def shacheck(filename, sha, failonmissing=True):
             return False
     return True
 
-@RemoteException.showError
 def __download_file__(dl_data):
     before = dl_data['sha'] and dl_data['sha'][:8] or ''
     filename = os.path.join(dl_data['cachedir'],'%s_%s' %(before,os.path.basename(dl_data['uri'])))
