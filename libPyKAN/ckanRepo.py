@@ -84,7 +84,7 @@ class CkanRepo(object):
                     util.debug("%s | %s" %(tarinfo.name,tarinfo.isreg() and 'file' or tarinfo.isdir() and'directory' or 'other'))
                     if tarinfo.isreg():
                         try:
-                            entrydata = json.loads(tar.extractfile(tarinfo).read())
+                            entrydata = json.loads(str(tar.extractfile(tarinfo).read()))
                             util.debug(json.dumps(entrydata, indent=4))
                             if not 'identifier' in entrydata:
                                 if 'name' in entrydata:
