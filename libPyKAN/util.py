@@ -25,6 +25,8 @@ def shacheck(filename, sha, failonmissing=True):
     if not sha and failonmissing:
         return False
     if sha:
+        if sha == '00000000':
+            return True
         text = open(filename,'rb').read()
         if len(sha) == 40:
             hashobj = hashlib.sha1(text)
@@ -36,8 +38,11 @@ def shacheck(filename, sha, failonmissing=True):
     return True
 
 def __download_file__(dl_data):
-    before = dl_data['sha'] and dl_data['sha'][:8] or ''
-    filename = os.path.join(dl_data['cachedir'],'%s_%s' %(before,os.path.basename(dl_data['uri'])))
+    before = ''
+    if dl_data['sha']:
+        before = '%s_' % dl_data['sha'][:8]
+    filename = dl_data['uri'].replace(':','').replace('/','_')
+    filename = os.path.join(dl_data['cachedir'],'%s%s' %(before,filename))
     print("Filename: %s" %filename)
     retries = 0
     done = os.path.exists(filename) and shacheck(filename,dl_data['sha'])

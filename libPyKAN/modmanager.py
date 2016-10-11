@@ -33,6 +33,8 @@ class ModManager(object):
         self.installed = Installed(self.settings, self.repo)
 
     def __get_sha__(self, repoentry):
+        if not 'download_hash' in repoentry:
+            return '00000000'
         if 'sha256' in repoentry['download_hash']:
             return repoentry['download_hash']['sha256']
         elif 'sha1' in repoentry['download_hash']:
