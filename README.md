@@ -31,7 +31,7 @@ Version 0.0.1-pre
 2. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
 3. Optimize the O(N) and O(n*x) algorithms.
 4. Improve the argument code for the commandline version. Some of it is a bit cumbersome.
-5. Import of CKAN installed list should also import filelist.
+5. ~~Import of CKAN installed list should also import filelist.~~ Done
 6. Consider using a Linter for your source (I'd recommend flake8)
 7. Consider using the logging module rather than a DEBUG flag
 8. Consider documenting at all levels (package, module, class, function) using a known doc style (Plain, Epytext, restructuredText, Numpy, Google, etc.)
