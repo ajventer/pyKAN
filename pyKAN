@@ -232,20 +232,11 @@ if __name__ == '__main__':
 
     def uninstall_mod():
         if not options.module:
-            util.error('Must specify --module with uninstall')        
-        mods = repo.find_latest(options.module)
-        if len(mods) > 1:
-            answer = select_menu('Multiple mods match your search, please select one', list(mods.keys()))
-            mods = [mods[list(mods.keys())[answer]]]
-        else:
-            try:
-                modid = list(mods.keys())[0]
-            except IndexError:
-                util.error('Could not find mod %s' % options.module)
-            mods = [mods[modid]] 
-        if not modid in INSTALLED.all_modnames():
+            util.error('Must specify --module with uninstall')
+        if not options.module in INSTALLED.all_modnames():
             util.error('Cannot uninstall %s as it is not installed' %modid)
-        MM = ModManager(mods, settings,repo)
+        mod = [INSTALLED[options.module]]
+        MM = ModManager(mod, settings,repo)
         remlist = MM.uninstall_list()
         print("About to remove: \n\t%s" %('\n\t'.join(remlist)))
         if not confirm():

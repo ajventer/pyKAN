@@ -90,7 +90,8 @@ class Installed(object):
         names_found = {}
         striplen = len(self.settings.KSPDIR.split('/'))
         for item in glob.iglob('%s/*' % os.path.join(self.settings.KSPDIR,'GameData')):
-            names_found[os.path.basename(item)] =  {'path':item}
+            if os.path.basename(item) != 'Squad':
+                names_found[os.path.basename(item)] =  {'path':item}
         for name in sorted(names_found):
             #Skip anything that's already in our own dataset
             if not name in list(self.all_modnames()):
@@ -100,8 +101,13 @@ class Installed(object):
                     filename_search = re.findall('(\d+\.\d+\.\d*)',os.path.basename(names_found[name]['path']))
                     if filename_search:
                         util.debug('Regex version search found %s' %filename_search)
-                        names_found[name]['version'] = filename_search[0]
-                        util.debug(names_found[name])
+                        newname = name.split(filename_search[0])[0]
+                        for i in ['.','_','-']:
+                            if newname.endswith(i):
+                                newname = newname[:-1]
+                        names_found[newname] = names_found[name]
+                        names_found[newname]['version'] = Version(filename_search[0])
+                        util.debug(names_found[newname])
                 elif os.path.isdir(names_found[name]['path']):
                     util.debug('%s is a directory' %names_found[name]['path'])
                     for vfile in glob.iglob('%s/*.version' % names_found[name]['path']):
@@ -111,7 +117,7 @@ class Installed(object):
                         vstring = vdata['VERSION'].get('MAJOR')
                         for k in ['MINOR','PATCH','BUILD']:
                             v = vdata['VERSION'].get(k)
-                            vstring = '%s%s' %(vstring,v and '.%s'%v or '')
+                            vstring = '%s%s' %(vstring,v is not None and '.%s'%v or '')
                         names_found[name]['version'] = Version(vstring)
                         util.debug(names_found[name])
                 else:
@@ -120,7 +126,7 @@ class Installed(object):
                 util.debug('%s already in records' %name)
         util.debug (names_found)
         for name in [i for i in names_found if 'version' in names_found[i]]:
-            util.debug(names_found[name])
+            util.debug('%s: %s' % (name, names_found[name]))
             matches = [self.repo.repodata[i] for i in self.repo.repodata if self.repo.repodata[i]['identifier'] == name and Version(self.repo.repodata[i]['version']) == names_found[name]['version']]
             util.debug('Matches: %s' % matches)
             if matches:
