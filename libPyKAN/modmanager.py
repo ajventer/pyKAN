@@ -44,8 +44,9 @@ class ModManager(object):
 
 
     def download(self):
-        urilist = [{'uri':i['download'],'sha':self.__get_sha__(i)} for i in self.repoentries]
-        util.debug(urilist)
+        util.debug(self.repoentries)
+        urilist = [{'uri':i['download'],'sha':self.__get_sha__(i),'id':i['identifier']} for i in self.repoentries]
+        util.debug('URILIST %s' % urilist)
         self.cachedir = os.path.join(self.settings.KSPDIR,'PYKAN','cache')
         util.mkdir_p(self.cachedir)
         self.modfiles = util.download_files(urilist,self.cachedir,self.settings['DownLoadRetryMax'])
@@ -70,8 +71,9 @@ class ModManager(object):
 
     def install(self):
         modlist = {}
+        util.debug('MODFILES %s' %self.modfiles)
         for i in self.modfiles:
-            mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
+            mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1] and m['identifier'] == i[2]][0]
             print("Installing module ",mod['identifier'])
             modfiles = []
             for target in mod.get('install',[{'PYKANBASIC':True,'install_to':'GameData'}]):
@@ -81,7 +83,12 @@ class ModManager(object):
                         util.debug(member.filename)
                         matched = False
                         if 'file' in target and target['file'] in member.filename:
-                           matched = os.path.basename(member.filename)
+                            matched = os.path.basename(member.filename)
+                            if 'GameData' in member.filename:
+                                mlist = member.filename.split('/')
+                                mpos = mlist.index('GameData')
+                                mdir = '/'.join(mlist[mpos+1:])
+                                matched = os.path.join(mdir,matched)
                         elif 'find' in target:
                             if target.get('find_matches_files', False):
                                 if member.filename.endswith(target['find']):
@@ -117,9 +124,10 @@ class ModManager(object):
                         else:
                             continue
                         if matched:
+                            util.debug ('Match: %s'% matched)
                             dest = os.path.join(self.settings.KSPDIR,target.get('install_to',''),matched)
                             if member.filename.endswith('/'):
-                                util.debug('Creatinf directory %s' % dest)
+                                util.debug('Creating directory %s' % dest)
                                 util.mkdir_p(dest)
                                 modfiles.append(dest)
                             else:

@@ -142,7 +142,7 @@ if __name__ == '__main__':
             return
         if options.installed:
             for i in INSTALLED.list_modules():
-                print('%s:  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status']))
+                print('%s :  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status']))
             return
         if options.allmods:
             filtermethods = []
@@ -157,7 +157,7 @@ if __name__ == '__main__':
             filterargs['kspversion'] = options.kspversion
         for i in repo.list_modules(filtermethods, filterargs):
             if options.allversions:
-                print("%s:  %s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i))))
+                print("%s :  %s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i))))
             else:
                 name = i.get('name','')
                 version = i.get('version','')
@@ -166,7 +166,8 @@ if __name__ == '__main__':
                     result[modid] = {'name': name, 'version': version}
         if result:
             for i in sorted(result):
-                print("%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i)))
+                print("%s :  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i)))
+
 
     def show_module():
         if not options.module:
@@ -234,7 +235,7 @@ if __name__ == '__main__':
         if not options.module:
             util.error('Must specify --module with uninstall')
         if not options.module in INSTALLED.all_modnames():
-            util.error('Cannot uninstall %s as it is not installed' %modid)
+            util.error('Cannot uninstall %s as it is not installed' %options.module)
         mod = [INSTALLED[options.module]]
         MM = ModManager(mod, settings,repo)
         remlist = MM.uninstall_list()
