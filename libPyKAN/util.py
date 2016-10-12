@@ -4,13 +4,12 @@ import json
 import os
 import glob
 import errno
-import RemoteException
 import hashlib
 import multiprocessing
 try:
     import requests
 except ImportError:
-    raise ImportError("This program requires the python requests module. Please install it using pip or your distro's package manager")
+    raise ImportError("This program requires the python3 requests module. Please install it using pip or your distro's package manager")
 
 DEBUG=False
 default_ckan_repo = "https://github.com/KSP-CKAN/CKAN-meta/archive/master.tar.gz"
@@ -26,25 +25,29 @@ def shacheck(filename, sha, failonmissing=True):
     if not sha and failonmissing:
         return False
     if sha:
+        if sha == '00000000':
+            return True
         text = open(filename,'rb').read()
-        if len(sha) == 64:
-            hashobj = hashlib.sha256(text)
-        else: #Sha1
+        if len(sha) == 40:
             hashobj = hashlib.sha1(text)
+        else: 
+            hashobj = hashlib.sha256(text)
         if hashobj.hexdigest().upper() !=sha.upper():
-            print 'Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), sha.upper())
+            print('Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), sha.upper()))
             return False
     return True
 
-@RemoteException.showError
 def __download_file__(dl_data):
-    print 'Downloading %s' % dl_data['uri']
-    before = dl_data['sha'] and dl_data['sha'][:8] or ''
-    filename = os.path.join(dl_data['cachedir'],'%s_%s' %(before,os.path.basename(dl_data['uri'])))
-    print "Filename: %s" %filename
+    before = ''
+    if dl_data['sha']:
+        before = '%s_' % dl_data['sha'][:8]
+    filename = dl_data['uri'].replace(':','').replace('/','_')
+    filename = os.path.join(dl_data['cachedir'],'%s%s' %(before,filename))
+    print("Filename: %s" %filename)
     retries = 0
     done = os.path.exists(filename) and shacheck(filename,dl_data['sha'])
     while not done and retries < dl_data['retries']:
+        print('Downloading %s' % dl_data['uri'])
         try:
             r = requests.get(dl_data['uri'], stream=True)
             with open(filename, 'wb') as f:
@@ -55,15 +58,15 @@ def __download_file__(dl_data):
                         f.write(chunk)
                 done = True
             if shacheck(filename,dl_data['sha'], False):
-                print
-                print "Warning: Sha hash for %s does not match repo data" % filename
+                print()
+                debug("Warning: Sha hash for %s does not match repo data" % filename)
         except Exception as e:
             retries += 1
             if retries >=  dl_data['retries']:
                 raise           
             debug ('Download error %s. %s  retries remain' %(e, dl_data['retries'] - retries))
             done = False
-    print
+    print()
     if not dl_data['sha']:
         return filename
     else:
@@ -100,7 +103,7 @@ def SaveJsonToFile(filename,data):
 
 def ReadJsonFromFile(filename, default=None,create=False):
     if default == None:
-        return json.loads(open(filename).read())
+        return json.loads(str(open(filename).read()))
     else:
         try:
             return ReadJsonFromFile(filename)
@@ -112,7 +115,7 @@ def ReadJsonFromFile(filename, default=None,create=False):
 def mkdir_p(targetpath):
     try:
         os.makedirs(targetpath)
-    except OSError, e:
+    except OSError as e:
         if e.errno != errno.EEXIST:
             raise
     return

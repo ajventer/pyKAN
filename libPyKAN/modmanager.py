@@ -1,12 +1,12 @@
 #Class implementing all module management methods. Install, uninstall, upgrade.
-from installed import Installed
-from version import Version
-import util
+from .installed import Installed
+from .version import Version
+from . import util
 import sys
 import os
 import re
 import zipfile
-from installed import Installed
+from .installed import Installed
 import shutil #Warning to windows porters - not sure how well this works on windows
 
 #These exceptions are used as callbacks to alert calling applications that we need human input
@@ -33,6 +33,8 @@ class ModManager(object):
         self.installed = Installed(self.settings, self.repo)
 
     def __get_sha__(self, repoentry):
+        if not 'download_hash' in repoentry:
+            return '00000000'
         if 'sha256' in repoentry['download_hash']:
             return repoentry['download_hash']['sha256']
         elif 'sha1' in repoentry['download_hash']:
@@ -70,7 +72,7 @@ class ModManager(object):
         modlist = {}
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
-            print "Installing module ",mod['identifier']
+            print("Installing module ",mod['identifier'])
             modfiles = []
             for target in mod.get('install',[{'PYKANBASIC':True,'install_to':'GameData'}]):
                 #self.clear_the_way(find,self.dest(target['install_to']),'find_regexp' in target,target.get('find_matches_files',False))
@@ -88,11 +90,12 @@ class ModManager(object):
                                 if member.filename.endswith(target['find']):
                                     matched = target['find']
                             else:
-                                if '/%s/' %target['find'] in member.filename:
+                                if '%s' %target['find'] in member.filename.split('/'):
                                     mx = member.filename.split('/')
                                     find = target['find'].split('/')[-1]
                                     idx = mx.index(find)
                                     matched = '/'.join(mx[idx:])
+
                         elif 'find_regexp' in target:
                             r = re.findall(target['find_regexp'],member.filename)
                             if r:
@@ -129,7 +132,7 @@ class ModManager(object):
                                     modfiles.append(os.path.dirname(dest))
                                     util.mkdir_p(os.path.dirname(dest))
                                 util.debug('Extracting file %s' % dest)
-                                open(dest,'w').write(z.open(member).read())
+                                open(dest,'wb').write(z.open(member).read())
                                 modfiles.append(dest)
                 self.installed.add_mod(mod['identifier'],mod,files=modfiles)
 
@@ -150,11 +153,10 @@ class ModManager(object):
                             to_del.append(i)
             remlist += to_del
         remlist = list(set(remlist))
-
         return remlist
 
-    def remove(self, modname):
-        print "Removing module %s" % modname
+    def remove(self, modname, deregister=True):
+        print("Removing module %s" % modname)
         target = os.path.join(self.settings.KSPDIR,'GameData',modname)
         filelist = self.installed[modname].get('installed_files',[])
         if filelist:
@@ -168,12 +170,13 @@ class ModManager(object):
         if os.path.isdir(target):
             util.debug('Removing %s' % target)
             shutil.rmtree(target)
-        self.installed.remove_mod(modname)
+        if deregister:
+            self.installed.remove_mod(modname)
 
     def upgrade(self):
         for mod in [i['identifier'] for i in self.repoentries]:
-            self.remove(mod)
-        self.get_download_list()
+            self.remove(mod, False)
+        self.get_download_list('no','no')
         self.download()
         self.install()        
 
@@ -195,12 +198,16 @@ class ModManager(object):
         while to_add:
             count += 1
             to_add = {}
-            for mod in dl_list.values():
-                conflicts = [i['name'] for i in mod.get('conflicts',[]) if i in self.installed.all_modnames()]
+            for mod in list(dl_list.values()):
+                if mod is None:
+                    continue
+                modconflicts = mod.get('conflicts',[])
+                conflicts = modconflicts and [i.get('identifier','') for i in modconflicts if i in self.installed.all_modnames()] or []
+                util.debug(conflicts)
                 if conflicts:
                     raise ConflictException('Required mod %s conflicts with installed mod(s): %s' % (mod,','.join(conflicts)))
                 for key in searchkeys:
-                    if key in mod:
+                    if key in mod and mod[key] is not None:
                         thiskey = {}
                         for m in mod[key]:
                             sys.stdout.write('.')
@@ -211,20 +218,20 @@ class ModManager(object):
                             if len(found) > 1:
                                 fnd = [i for i in found if i in dl_list or i in self.installed.all_modnames()]
                                 if not fnd:
-                                    raise MultiProviderException(','.join(found.keys()))
+                                    raise MultiProviderException(','.join(list(found.keys())))
                                 else:
                                     found = fnd
                             for f in found:
                                 if f not in dl_list and f not in self.installed.all_modnames() and not f in blacklist:
                                     thiskey[f] = found[f]
                         if thiskey and ((key == 'suggests' and suggests=='ask') or (key == 'recommends' and recommends =='ask')):
-                            raise ConfirmException('%s:%s:%s' %(mod['identifier'],key,','.join(thiskey.keys())))
+                            raise ConfirmException('%s:%s:%s' %(mod['identifier'],key,','.join(list(thiskey.keys()))))
                         to_add.update(thiskey)
             dl_list.update(to_add)
         # self.repoentries = []
         # for mod in dl_list:
         #     self.repoentries.append(mod)
-        print
+        print()
         self.repoentries = []
         for mod in dl_list:
             self.repoentries.append(dl_list[mod])

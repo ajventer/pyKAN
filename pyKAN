@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from libPyKAN import ckanRepo,pykancfg,util,filters
 from libPyKAN.version import Version
 from libPyKAN.installed import Installed
@@ -8,21 +8,21 @@ from argparse import RawTextHelpFormatter
 import sys
 import json
 if sys.version_info < (2, 7, 9):
-    print "WARNING ! Many upstream download servers required SNI verification."
-    print "Python does not support this in versions earlier than 2.7.9."
-    print "You will be unable to install mods hosted on these servers"
+    print("WARNING ! Many upstream download servers required SNI verification.")
+    print("Python does not support this in versions earlier than 2.7.9.")
+    print("You will be unable to install mods hosted on these servers")
 
 
 
 def select_menu(msg, options):
     valid_answer = False
     while not valid_answer:
-        print
-        print msg
+        print()
+        print(msg)
         for i in options:
-            print '\t%s: %s' %(options.index(i),i)
+            print('\t%s: %s' %(options.index(i),i))
 
-        answer = raw_input('Choice:')
+        answer = input('Choice:')
         valid_answer = answer.isdigit() and int(answer) >= 0 and int(answer) < len(options)
         if not valid_answer:
             valid_answer = answer in options
@@ -31,11 +31,11 @@ def select_menu(msg, options):
         else:
             answer = answer in options and options.index(answer) or None
         if not valid_answer:
-            print "\nError. Invalid choice. Please try again"
+            print("\nError. Invalid choice. Please try again")
     return answer
 
 def confirm(msg='Continue [y/n]'):
-        answer = raw_input("Continue [y/n]")
+        answer = input("Continue [y/n]")
         return answer.lower().startswith('y') 
 
 
@@ -43,9 +43,9 @@ def confirm(msg='Continue [y/n]'):
 if __name__ == '__main__':
     def show_settings():
         if options.allsettings:
-            print settings.view_all()
+            print(settings.view_all())
         else:
-            print settings
+            print(settings)
 
     def change_setting():
         if options.key == None or options.value == None:
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         key = options.key
         if not key in settings.flatsettings():
             foundkey = False
-            for k in settings.flatsettings().keys():
+            for k in list(settings.flatsettings().keys()):
                 if k.lower() == key.lower():
                     foundkey = True
                     key = k
@@ -67,13 +67,13 @@ if __name__ == '__main__':
         if isinstance(value,str) and value.lower() in ['true', 'false']:
             value = value.lower() == 'true' and True or False
         settings.set(key,value)
-        print "Updated settings:", settings
+        print("Updated settings:", settings)
         settings.save()
 
     def listkspdirs():
         c = 0
         for i in settings['KSPDIRS']:
-            print '%s: %s' %(c, i)
+            print('%s: %s' %(c, i))
             c += 1
 
     def addkspdir():
@@ -100,10 +100,10 @@ if __name__ == '__main__':
         c = 0
         repolist = repo.available_repo_list()
         for i in repolist:
-            print '%s: [%s] %s (%s)' %(c,
+            print('%s: [%s] %s (%s)' %(c,
                 i['uri'] in settings['Repos'] and '*' or ' ',
                 i['uri'],
-                i['x_comment'])
+                i['x_comment']))
             c += 1
 
     def add_repo():
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     def update():
         repo.update_repository_data()
-        print 'Repository updated. %s modules in repo' %(len(repo.repodata.keys()))
+        print('Repository updated. %s modules in repo' %(len(list(repo.repodata.keys()))))
 
     def list_modules():
         f = filters.Filter(settings)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
             return
         if options.installed:
             for i in INSTALLED.list_modules():
-                print '%s:  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status'])
+                print('%s:  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status']))
             return
         if options.allmods:
             filtermethods = []
@@ -157,7 +157,7 @@ if __name__ == '__main__':
             filterargs['kspversion'] = options.kspversion
         for i in repo.list_modules(filtermethods, filterargs):
             if options.allversions:
-                print "%s:  %s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i)))
+                print("%s:  %s | version: %s (%s)" %(i['identifier'],i.get('name',i),i.get('version'),INSTALLED.modstatus(i.get('name',i))))
             else:
                 name = i.get('name','')
                 version = i.get('version','')
@@ -166,13 +166,13 @@ if __name__ == '__main__':
                     result[modid] = {'name': name, 'version': version}
         if result:
             for i in result:
-                print "%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i))
+                print("%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i)))
 
     def show_module():
         if not options.module:
             util.error('Must specify --module with show')
-        for mod in repo.find_latest(options.module).values():
-            print json.dumps(mod, indent=8)
+        for mod in list(repo.find_latest(options.module).values()):
+            print(json.dumps(mod, indent=8))
 
     def install_mod():
         done = False
@@ -182,8 +182,8 @@ if __name__ == '__main__':
         downloadlist = []
         mods = repo.find_latest(options.module)
         if len(mods) > 1:
-            answer = select_menu('Multiple mods match your search, please select one', mods.keys())
-            mods = [mods[mods.keys()[answer]]]
+            answer = select_menu('Multiple mods match your search, please select one', list(mods.keys()))
+            mods = [mods[list(mods.keys())[answer]]]
         else:
             try:
                 modid = list(mods.keys())[0]
@@ -204,67 +204,68 @@ if __name__ == '__main__':
                         mods.append(m)
                     done = False
                 elif isinstance(e,MissingDependencyException):
-                    print
+                    print()
                     util.error(str(e))
                 elif isinstance(e,ConfirmException):
-                    print
+                    print()
                     done = False
                     owningmod,verb,modlist = str(e).split(':')
                     modlist = modlist.split(',')
-                    print '%s %s:\n\t%s' %(owningmod,verb,'\n\t'.join(modlist))
-                    answer = raw_input('Install these mods [y/n]')
+                    print('%s %s:\n\t%s' %(owningmod,verb,'\n\t'.join(modlist)))
+                    answer = input('Install these mods [y/n]')
                     if answer.lower().startswith('y'):
                         for m in modlist:
-                            for mm in repo.find_latest(m).values():
+                            for mm in list(repo.find_latest(m).values()):
                                 mods.append(mm)
                     else:
                         blacklist += modlist
                 else:
                     raise
-        print "About to install:\n\t%s" %('\n\t'.join(downloadlist))
+        print("About to install:\n\t%s" %('\n\t'.join(downloadlist)))
         if not confirm():
             sys.exit()
-        print "Downloading module%s" %(len(downloadlist) > 1 and 's' or '')
+        print("Downloading module%s" %(len(downloadlist) > 1 and 's' or ''))
         modfiles = MM.download()
         util.debug(modfiles)
-        print "Installing modules"
+        print("Installing modules")
         MM.install()
 
     def uninstall_mod():
         if not options.module:
-            util.error('Must specify --module with uninstall')        
-        mods = repo.find_latest(options.module)
-        if len(mods) > 1:
-            answer = select_menu('Multiple mods match your search, please select one', mods.keys())
-            mods = [mods[mods.keys()[answer]]]
-        else:
-            try:
-                modid = mods.keys()[0]
-            except IndexError:
-                util.error('Could not find mod %s' % options.module)
-            mods = [mods[modid]] 
-        if not modid in INSTALLED.all_modnames():
+            util.error('Must specify --module with uninstall')
+        if not options.module in INSTALLED.all_modnames():
             util.error('Cannot uninstall %s as it is not installed' %modid)
-        MM = ModManager(mods, settings,repo)
+        mod = [INSTALLED[options.module]]
+        MM = ModManager(mod, settings,repo)
         remlist = MM.uninstall_list()
-        print"About to remove: \n\t%s" %('\n\t'.join(remlist))
+        print("About to remove: \n\t%s" %('\n\t'.join(remlist)))
         if not confirm():
             sys.exit()
         for mod in remlist:
-            print "Uninstalling %s" % mod
+            print("Uninstalling %s" % mod)
             MM.remove(mod)
 
     def upgradeable():
         if options.module:
             mods = [i for i in repo.find_latest(options.module) if i in INSTALLED.all_modnames()]
         else:
-            mods = INSTALLED.all_modnames()
+            mods = list(INSTALLED.all_modnames())
         upgradeables = []
         for mod in mods:
-            if Version(repo.find_latest(mod).get('version','0.0.0')) > Version(INSTALLED[mod].get('version','0.0.0')):
-                upgradeables.append(mod)
-        print "Mods that can be upgraded: \n\t%s"  %('\n\t'.join(upgradeables))
-        return upgradeables
+            m = repo.find_latest(mod)
+            m = mod in m and m[mod] or m
+            if not m:
+                continue
+            v1 = Version(m.get('version','0.0.0')) 
+            v2 = Version(INSTALLED[mod].get('version','0.0.0'))
+            if v1 > v2:
+                upgradeables.append((mod,v1,v2))
+        upgradeables = list(set(upgradeables))
+        print ("Mods that can be upgraded: \n"  )
+        for u in upgradeables:
+            print ('\t%s %s -> %s' %(u[0],u[2],u[1]))
+        return [i[0] for i in upgradeables]
+
 
     def upgrade():
         uplist = [INSTALLED[i] for i in upgradeable()]
@@ -272,7 +273,8 @@ if __name__ == '__main__':
             sys.exit()
         MM = ModManager(uplist, settings,repo)
         MM.upgrade()
-        print "Modules upgraded"
+
+        print("Modules upgraded")
 
 
     actions = {
@@ -296,7 +298,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
     parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
     parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
-    parser.add_argument('action',default='show_settings',choices=actions.keys())
+    parser.add_argument('action',default='show_settings',choices=list(actions.keys()))
     parser.add_argument('--key',type=str,default=None,help='The key to change the value off. Only used with change_setting')
     parser.add_argument('--value',type=str,default=None,help='The new value to set for key. Only used with change_setting')
     parser.add_argument('--repo',type=int,default=None,help='The repo index or uri. Used with add_repo and del_repo.')
@@ -345,6 +347,6 @@ if __name__ == '__main__':
         INSTALLED = Installed(settings,repo)
 
         settings.reload()
-        print "Using KSP Directory: ",settings.KSPDIR
+        print("Using KSP Directory: ",settings.KSPDIR)
 
     actions[options.action]['method']()

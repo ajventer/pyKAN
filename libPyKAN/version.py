@@ -1,7 +1,9 @@
 #Generic datatype for version information
-import util
+from . import util
 import re
+from functools import total_ordering
 
+@total_ordering
 class Version(object):
     def __init__(self,*args):
         """
@@ -17,7 +19,10 @@ class Version(object):
         """
         versionlist = []
         if len(args) == 1 and isinstance(args[0],str):
-            versionlist = args[0].split('.')
+            vstring = args[0]
+            if vstring.startswith('v') or vstring.startswith('V'):
+                vstring = vstring[1:]
+            versionlist = vstring.split('.')
         elif len(args) == 1:
             try:
             #If input is a list, tuple or other enumerable
@@ -39,6 +44,8 @@ class Version(object):
                 #But extra leading zeroes screw things up
                 while i.startswith('0') and len(i) > 1:
                     i = i[1:]
+                if i == '.':
+                    continue
                 self.versionlist.append(i)
 
     def numpart(self,s):
@@ -66,7 +73,7 @@ class Version(object):
             return 0
         if str(self) == 'any' or str(other) == 'any':
             return 0
-        if len(other.versionlist) > self.versionlist:
+        if len(other.versionlist) > len(self.versionlist):
             return other.__cmp__(self)
         for c,i in enumerate(self.versionlist):
             try:
@@ -91,10 +98,16 @@ class Version(object):
                 return -1
         return 0
 
+    def __lt__(self,other):
+        util.debug('Comparing %s to %s' %(self,other))
+        return self.__cmp__(other) < 0
+
+    def __eq__(self,other):
+        util.debug('Comparing %s to %s' %(self,other))
+        return self.__cmp__(other) == 0
+
     def __str__(self):
         return '.'.join(self.versionlist)
-
-
 
     def __getitem__(self, key):
         return self.versionlist[key]
