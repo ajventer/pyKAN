@@ -79,7 +79,10 @@ class ModManager(object):
                         util.debug(member.filename)
                         matched = False
                         if 'file' in target and member.filename.endswith(target['file']):
-                           matched = os.path.basename(member.filename)
+                            matched = os.path.basename(member.filename)
+                            if not member.filename.endswith('/'):
+                                mdir = os.path.basename(os.path.dirname(member.filename))
+                                matched = os.path.join(mdir,matched)
                         elif 'find' in target:
                             if target.get('find_matches_files', False):
                                 if member.filename.endswith(target['find']):

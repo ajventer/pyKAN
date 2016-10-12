@@ -25,6 +25,17 @@ Version 0.0.1-pre
 10. Uninstall modules
 11. Upgrade modules
 
+##Changes
+###0.0.1-beta2
+1. Python3 support
+2. Lots of small bugfixes
+3. Improved mod installer, mod upgrades and mod uninstalls
+4. List_module now sorts alphabetically
+
+###0.0.1-beta1
+1. Initial public release
+
+
 ##Todo:
 1. PyQT GUI for graphical usage
 2. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
@@ -33,5 +44,7 @@ Version 0.0.1-pre
 5. Import of CKAN installed list should also import filelist.
 6. Make code python3 compatible so the script is version agnostic.
 
-
+##Written By
+1. A.J. Venter (metalpoetza on reddit).
+2. SYZYGY - Python3 support
 
