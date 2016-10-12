@@ -102,7 +102,6 @@ def debug_n(message):
         sys.stderr.flush()
 
 def SaveJsonToFile(filename,data):
-    debug('Saving %s to %s' % (data,filename))
     open(filename,'w').write(json.dumps(data,indent=4))    
 
 def ReadJsonFromFile(filename, default=None,create=False):

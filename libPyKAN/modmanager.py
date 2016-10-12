@@ -88,17 +88,25 @@ class ModManager(object):
                                 mlist = member.filename.split('/')
                                 mpos = mlist.index('GameData')
                                 mdir = '/'.join(mlist[mpos+1:])
-                                matched = os.path.join(mdir,matched)
+                                if not mdir.endswith(matched):
+                                    matched = os.path.join(mdir,matched)
                         elif 'find' in target:
                             if target.get('find_matches_files', False):
                                 if member.filename.endswith(target['find']):
                                     matched = target['find']
                             else:
-                                if '%s' %target['find'] in member.filename.split('/'):
-                                    mx = member.filename.split('/')
-                                    find = target['find'].split('/')[-1]
-                                    idx = mx.index(find)
-                                    matched = '/'.join(mx[idx:])
+                                if '%s' %target['find'] in member.filename:
+                                    matched = os.path.basename(member.filename)
+                                    if 'GameData' in member.filename:
+                                        mlist = member.filename.split('/')
+                                        mpos = mlist.index('GameData')
+                                        mdir = '/'.join(mlist[mpos+1:])
+                                        if not mdir.endswith(matched):
+                                            matched = os.path.join(mdir,matched)
+                                    else:
+                                        mpos = member.filename.index(target['find'])
+                                        mpos += len(target['find'])
+                                        matched = member.filename[mpos:]
 
                         elif 'find_regexp' in target:
                             r = re.findall(target['find_regexp'],member.filename)
