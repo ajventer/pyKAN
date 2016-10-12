@@ -165,7 +165,7 @@ if __name__ == '__main__':
                 if modid not in result or Version(result[modid]['version']) < Version(version):
                     result[modid] = {'name': name, 'version': version}
         if result:
-            for i in result:
+            for i in sorted(result):
                 print("%s:  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i)))
 
     def show_module():
