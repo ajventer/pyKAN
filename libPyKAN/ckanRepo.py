@@ -36,7 +36,7 @@ class CkanRepo(object):
         util.SaveJsonToFile(RepoListFile,util.download_json(util.repository_list))
         uris = []
         for i in self.settings.repos():
-            uris.append({'uri': i, 'sha': None})
+            uris.append({'uri': i, 'sha': None, 'id': None})
         repofiles = util.download_files(uris, 
             self.cachedir, 
             self.settings['DownLoadRetryMax'])

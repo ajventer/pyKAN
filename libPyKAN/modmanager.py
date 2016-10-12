@@ -44,8 +44,9 @@ class ModManager(object):
 
 
     def download(self):
-        urilist = [{'uri':i['download'],'sha':self.__get_sha__(i)} for i in self.repoentries]
-        util.debug(urilist)
+        util.debug(self.repoentries)
+        urilist = [{'uri':i['download'],'sha':self.__get_sha__(i),'id':i['identifier']} for i in self.repoentries]
+        util.debug('URILIST %s' % urilist)
         self.cachedir = os.path.join(self.settings.KSPDIR,'PYKAN','cache')
         util.mkdir_p(self.cachedir)
         self.modfiles = util.download_files(urilist,self.cachedir,self.settings['DownLoadRetryMax'])
@@ -70,9 +71,9 @@ class ModManager(object):
 
     def install(self):
         modlist = {}
-        util.debug(self.modfiles)
+        util.debug('MODFILES %s' %self.modfiles)
         for i in self.modfiles:
-            mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
+            mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1] and m['identifier'] == i[2]][0]
             print("Installing module ",mod['identifier'])
             modfiles = []
             for target in mod.get('install',[{'PYKANBASIC':True,'install_to':'GameData'}]):

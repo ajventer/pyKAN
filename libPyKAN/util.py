@@ -41,6 +41,8 @@ def __download_file__(dl_data):
     before = ''
     if dl_data['sha']:
         before = '%s_' % dl_data['sha'][:8]
+    if dl_data['id']:
+        before += '_%s' % dl_data['id']
     filename = dl_data['uri'].replace(':','').replace('/','_')
     filename = os.path.join(dl_data['cachedir'],'%s%s' %(before,filename))
     print("Filename: %s" %filename)
@@ -70,12 +72,12 @@ def __download_file__(dl_data):
     if not dl_data['sha']:
         return filename
     else:
-        return (filename,dl_data['sha'])
+        return (filename,dl_data['sha'],dl_data['id'])
 
 def download_files(urilist, cachedir, retries):
     dl_data = []
     for uri in urilist:
-        dl_data.append({"uri": uri['uri'],"cachedir": cachedir, 'retries': retries, 'sha': uri['sha']})
+        dl_data.append({'id':'id' in uri and uri['id'] or '',"uri": uri['uri'],"cachedir": cachedir, 'retries': retries, 'sha': uri['sha']})
     pool = multiprocessing.Pool()
     return pool.map(__download_file__, dl_data)
 
