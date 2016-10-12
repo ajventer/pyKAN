@@ -261,11 +261,13 @@ if __name__ == '__main__':
             v2 = Version(INSTALLED[mod].get('version','0.0.0'))
             if v1 > v2:
                 upgradeables.append((mod,v1,v2))
-        upgradeables = list(set(upgradeables))
+        up =[]
         print ("Mods that can be upgraded: \n"  )
         for u in upgradeables:
+            if not u in up:
+                up.append(u)
             print ('\t%s %s -> %s' %(u[0],u[2],u[1]))
-        return [i[0] for i in upgradeables]
+        return [i[0] for i in up]
 
 
     def upgrade():

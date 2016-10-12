@@ -115,12 +115,7 @@ class ModManager(object):
                                 idx = mx.index('GameData') +1
                                 matched = '/'.join(mx[idx:])
                             else:
-                                #I really don't like this part
-                                #I can't believe ever uses hardcoded recipes
-                                #They have a structure for encoding the steps in the spec-  why not
-                                #use it consistently ?
-                                if member.filename.endswith('/'):
-                                    matched = member.filename
+                                matched = member.filename
                         else:
                             continue
                         if matched:
