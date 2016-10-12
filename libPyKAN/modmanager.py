@@ -70,6 +70,7 @@ class ModManager(object):
 
     def install(self):
         modlist = {}
+        util.debug(self.modfiles)
         for i in self.modfiles:
             mod = [m for m in self.repoentries if self.__get_sha__(m) == i[1]][0]
             print("Installing module ",mod['identifier'])
@@ -80,10 +81,12 @@ class ModManager(object):
                     for member in z.infolist():
                         util.debug(member.filename)
                         matched = False
-                        if 'file' in target and member.filename.endswith(target['file']):
+                        if 'file' in target and target['file'] in member.filename:
                             matched = os.path.basename(member.filename)
-                            if not member.filename.endswith('/'):
-                                mdir = os.path.basename(os.path.dirname(member.filename))
+                            if 'GameData' in member.filename:
+                                mlist = member.filename.split('/')
+                                mpos = mlist.index('GameData')
+                                mdir = '/'.join(mlist[mpos+1:])
                                 matched = os.path.join(mdir,matched)
                         elif 'find' in target:
                             if target.get('find_matches_files', False):
@@ -120,9 +123,10 @@ class ModManager(object):
                         else:
                             continue
                         if matched:
+                            util.debug ('Match: %s'% matched)
                             dest = os.path.join(self.settings.KSPDIR,target.get('install_to',''),matched)
                             if member.filename.endswith('/'):
-                                util.debug('Creatinf directory %s' % dest)
+                                util.debug('Creating directory %s' % dest)
                                 util.mkdir_p(dest)
                                 modfiles.append(dest)
                             else:

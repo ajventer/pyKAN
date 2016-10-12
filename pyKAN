@@ -234,7 +234,7 @@ if __name__ == '__main__':
         if not options.module:
             util.error('Must specify --module with uninstall')
         if not options.module in INSTALLED.all_modnames():
-            util.error('Cannot uninstall %s as it is not installed' %modid)
+            util.error('Cannot uninstall %s as it is not installed' %options.module)
         mod = [INSTALLED[options.module]]
         MM = ModManager(mod, settings,repo)
         remlist = MM.uninstall_list()

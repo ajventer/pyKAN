@@ -103,7 +103,6 @@ class Version(object):
         return self.__cmp__(other) < 0
 
     def __eq__(self,other):
-        util.debug('Comparing %s to %s' %(self,other))
         return self.__cmp__(other) == 0
 
     def __str__(self):
