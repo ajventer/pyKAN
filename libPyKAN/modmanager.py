@@ -105,7 +105,6 @@ class ModManager(object):
                                             matched = os.path.join(mdir,matched)
                                     else:
                                         mpos = member.filename.index(target['find'])
-                                        mpos += len(target['find'])
                                         matched = member.filename[mpos:]
 
                         elif 'find_regexp' in target:
