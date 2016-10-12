@@ -5,7 +5,7 @@ it merely provides an alternate client to consume this data to manage, install a
 
 All the logic is kept in libraries - so that writing a new interface is easy.
 
-Version 0.0.1-pre
+Version 0.0.1.2
 
 ##Installation:
 1. Clone or Download the repository.
