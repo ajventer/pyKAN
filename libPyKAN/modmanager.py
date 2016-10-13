@@ -80,16 +80,22 @@ class ModManager(object):
                 #self.clear_the_way(find,self.dest(target['install_to']),'find_regexp' in target,target.get('find_matches_files',False))
                 with zipfile.ZipFile(i[0],'r') as z:
                     for member in z.infolist():
-                        util.debug(member.filename)
+                        util.debug('Zipfile Member: %s '%member.filename)
                         matched = False
                         if 'file' in target and target['file'] in member.filename:
                             matched = os.path.basename(member.filename)
+                            util.debug('Basename: %s' %matched)
                             if 'GameData' in member.filename:
+                                util.debug('Path contains GameData')
                                 mlist = member.filename.split('/')
                                 mpos = mlist.index('GameData')
                                 mdir = '/'.join(mlist[mpos+1:])
+                                util.debug('Extracted path: %s' %mdir)
                                 if not mdir.endswith(matched):
+                                    util.debug('Partial path. Correcting')
                                     matched = os.path.join(mdir,matched)
+                                else:
+                                    matched = mdir
                         elif 'find' in target:
                             if target.get('find_matches_files', False):
                                 if member.filename.endswith(target['find']):
