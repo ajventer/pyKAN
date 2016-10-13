@@ -9,10 +9,18 @@ from . import util
 import copy
 from . import version
 import sys
+try:
+    from appdirs import *
+except ImportError:
+    raise ImportError("This program requires the python3-appdirs module. Please install it using pip or your distro's package manager")
+
 
 class PyKANSettings(object):
     def __init__(self, KSPDIR=None):
-        self.SharedSettingsFile = os.path.join(os.getenv('HOME'),'.pykan.json')
+        configdir = user_config_dir('pyKAN','A.J. Venter')
+        if not os.path.isdir(configdir):
+            util.mkdir_p(configdir)
+        self.SharedSettingsFile = os.path.join(configdir,'pykan.json')
         self.SharedSettings = {'KSPDIRS': [],"DownLoadRetryMax": 1}
         steamKSPDir = os.path.join(os.getenv('HOME'),'.local','share','Steam','steamapps','common','Kerbal Space Program')
         self.SharedSettings = util.ReadJsonFromFile(self.SharedSettingsFile, self.SharedSettings, create=True)
