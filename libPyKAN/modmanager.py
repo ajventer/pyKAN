@@ -110,10 +110,7 @@ class ModManager(object):
                                         if not mdir.endswith(matched):
                                             matched = os.path.join(mdir,matched)
                                     else:
-                                        mpos = member.filename.index(target['find'])
-                                        mpos += len(target['find'])
-                                        matched = member.filename[mpos:]
-
+                                        matched = member.filename
                         elif 'find_regexp' in target:
                             r = re.findall(target['find_regexp'],member.filename)
                             if r:
@@ -134,6 +131,9 @@ class ModManager(object):
                             continue
                         if matched:
                             util.debug ('Match: %s'% matched)
+                            endpoint = target.get('install_to','').split('/')[-1]
+                            if endpoint == matched.split('/')[0]:
+                                matched = '/'.join(matched.split('/')[1:])
                             dest = os.path.join(self.settings.KSPDIR,target.get('install_to',''),matched)
                             if member.filename.endswith('/'):
                                 util.debug('Creating directory %s' % dest)
@@ -224,8 +224,8 @@ class ModManager(object):
                     if key in mod and mod[key] is not None:
                         thiskey = {}
                         for m in mod[key]:
-                            sys.stdout.write('.')
-                            sys.stdout.flush()
+                            if m['name'] in list(self.installed.all_modnames()):
+                                continue
                             found =  self.repo.find_latest(m['name'])
                             if not found and key is  'depends': #Failing to find a suggestion is not a crisis
                                 raise MissingDependencyException('Could not find module %s required by %s' %(m['name'],mod))
@@ -236,7 +236,7 @@ class ModManager(object):
                                 else:
                                     found = fnd
                             for f in found:
-                                if f not in dl_list and f not in self.installed.all_modnames() and not f in blacklist:
+                                if f not in dl_list and f not in list(self.installed.all_modnames()) and not f in blacklist:
                                     thiskey[f] = found[f]
                         if thiskey and ((key == 'suggests' and suggests=='ask') or (key == 'recommends' and recommends =='ask')):
                             raise ConfirmException('%s:%s:%s' %(mod['identifier'],key,','.join(list(thiskey.keys()))))
