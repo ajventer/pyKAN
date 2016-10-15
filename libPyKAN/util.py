@@ -54,7 +54,7 @@ def __download_file__(dl_data):
             r = requests.get(dl_data['uri'], stream=True)
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024): 
-                    if chunk: 
+                    if chunk:
                         sys.stdout.write('#')
                         sys.stdout.flush()
                         f.write(chunk)

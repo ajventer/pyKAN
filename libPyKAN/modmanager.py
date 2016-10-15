@@ -84,6 +84,8 @@ class ModManager(object):
                         matched = False
                         if 'file' in target and target['file'] in member.filename:
                             matched = os.path.basename(member.filename)
+                            mdir = member.filename
+                            util.debug('Member directory: %s' %mdir)
                             util.debug('Basename: %s' %matched)
                             if 'GameData' in member.filename:
                                 util.debug('Path contains GameData')
@@ -91,11 +93,11 @@ class ModManager(object):
                                 mpos = mlist.index('GameData')
                                 mdir = '/'.join(mlist[mpos+1:])
                                 util.debug('Extracted path: %s' %mdir)
-                                if not mdir.endswith(matched):
-                                    util.debug('Partial path. Correcting')
-                                    matched = os.path.join(mdir,matched)
-                                else:
-                                    matched = mdir
+                            if not mdir.endswith(matched):
+                                util.debug('Partial path. Correcting')
+                                matched = os.path.join(mdir,matched)
+                            else:
+                                matched = mdir
                         elif 'find' in target:
                             if '%s' %target['find'] in member.filename:
                                 matched = os.path.basename(member.filename)
