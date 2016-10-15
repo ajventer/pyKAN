@@ -112,7 +112,10 @@ class Installed(object):
                     util.debug('%s is a directory' %names_found[name]['path'])
                     for vfile in glob.iglob('%s/*.version' % names_found[name]['path']):
                         util.debug('Trying version file %s' % vfile)
-                        vdata = util.ReadJsonFromFile(vfile)
+                        try:
+                            vdata = util.ReadJsonFromFile(vfile)
+                        except:
+                            continue
                         util.debug(vdata)
                         vstring = vdata['VERSION'].get('MAJOR')
                         for k in ['MINOR','PATCH','BUILD']:
