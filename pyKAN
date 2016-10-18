@@ -141,7 +141,7 @@ if __name__ == '__main__':
             upgradeable()
             return
         if options.installed:
-            for i in INSTALLED.list_modules():
+            for i in sorted(INSTALLED.list_modules(), key=lambda k: k['identifier']):
                 print('%s :  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status']))
             return
         if options.allmods:
