@@ -10,11 +10,10 @@ Version 0.0.1.2
 ##Installation:
 1. Clone or Download the repository.
 2. Change to the directory where you downloaded
-3. `./pyKAN --help`
+3. Make sure you have python-requests and python-appdirs installed. The program will tell you if it cannot find these modules.
+4. `./pyKAN --help`
+5.   python pyKAN --help #On windows
 
-I have received reports that one windows you should use
-    python pykan --help
-4. Make sure you have python-requests and python-appdirs installed. The program will tell you if it cannot find these modules.
 
 ##Current features:
 1. Global settings holding list of known KSP installation directories
