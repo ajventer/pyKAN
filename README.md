@@ -30,6 +30,14 @@ Version 0.0.1.2
 12. Python3 - in master branch only.
 
 ##Changes
+###0.1.0
+1. The installed modules listing is now also sorted alphabetically.
+2. Fixed a bug where calling upgrade would reinstall the same version as was there before
+3. Disabled  strict mode JSON to deal with the bad json in .version files.
+4. Handling of 'file' mode install sections now work correctly. 
+5. Fixed install destination for mods like firespittercore
+6. Use appdirs module to place main configuration file in a platform neutral manner
+
 ###0.0.1-beta2
 1. Python3 support
 2. Lots of small bugfixes
