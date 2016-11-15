@@ -49,7 +49,11 @@ class Version(object):
                 self.versionlist.append(i)
 
     def numpart(self,s):
-        return int(''.join(re.findall('\d',s)))
+        try:
+            return int(''.join(re.findall('\d',s)))
+        except ValueError:
+            # if numpart is '', int() can't convert it so treat as 0
+            return 0
 
     def __cmp__(self, other):
         """
