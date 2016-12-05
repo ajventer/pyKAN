@@ -78,7 +78,7 @@ class Version(object):
         if str(self) == 'any' or str(other) == 'any':
             return 0
         if len(other.versionlist) > len(self.versionlist):
-            return other.__cmp__(self)
+            return -other.__cmp__(self)
         for c,i in enumerate(self.versionlist):
             try:
                 j = other.versionlist[c]
