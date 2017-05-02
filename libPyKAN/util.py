@@ -11,7 +11,7 @@ try:
 except ImportError:
     raise ImportError("This program requires the python3 requests module. Please install it using pip or your distro's package manager")
 
-DEBUG=False
+DEBUG = False
 default_ckan_repo = "https://github.com/KSP-CKAN/CKAN-meta/archive/master.tar.gz"
 repository_list = "https://raw.githubusercontent.com/KSP-CKAN/CKAN-meta/master/repositories.json"
 
@@ -30,7 +30,7 @@ def shacheck(filename, sha, failonmissing=True):
         text = open(filename,'rb').read()
         if len(sha) == 40:
             hashobj = hashlib.sha1(text)
-        else: 
+        else:
             hashobj = hashlib.sha256(text)
         if hashobj.hexdigest().upper() !=sha.upper():
             print('Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), sha.upper()))
@@ -53,7 +53,7 @@ def __download_file__(dl_data):
         try:
             r = requests.get(dl_data['uri'], stream=True)
             with open(filename, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=1024): 
+                for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         sys.stdout.write('#')
                         sys.stdout.flush()
@@ -67,7 +67,7 @@ def __download_file__(dl_data):
         except Exception as e:
             retries += 1
             if retries >=  dl_data['retries']:
-                raise           
+                raise
             debug ('Download error %s. %s  retries remain' %(e, dl_data['retries'] - retries))
             done = False
     print()
@@ -102,7 +102,7 @@ def debug_n(message):
         sys.stderr.flush()
 
 def SaveJsonToFile(filename,data):
-    open(filename,'w').write(json.dumps(data,indent=4))    
+    open(filename,'w').write(json.dumps(data,indent=4))
 
 def ReadJsonFromFile(filename, default=None,create=False):
     if default == None:
@@ -122,5 +122,3 @@ def mkdir_p(targetpath):
         if e.errno != errno.EEXIST:
             raise
     return
-
-
