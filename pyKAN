@@ -35,8 +35,8 @@ def select_menu(msg, options):
     return answer
 
 def confirm(msg='Continue [y/n]'):
-        answer = input("Continue [y/n]")
-        return answer.lower().startswith('y')
+    answer = input("Continue [y/n]")
+    return answer.lower().startswith('y')
 
 
 
