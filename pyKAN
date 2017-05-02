@@ -35,8 +35,8 @@ def select_menu(msg, options):
     return answer
 
 def confirm(msg='Continue [y/n]'):
-        answer = input("Continue [y/n]")
-        return answer.lower().startswith('y')
+    answer = input("Continue [y/n]")
+    return answer.lower().startswith('y')
 
 
 
@@ -142,7 +142,7 @@ if __name__ == '__main__':
             return
         if options.installed:
             for i in sorted(INSTALLED.list_modules(), key=lambda k: k['identifier']):
-                print('%s :  %s | %s (%s)' %(i['identifier'],i['name'],i['version'],i['status']))
+                print('%s :  %s | %s (%s)' %(i['identifier'], i['name'], i['version'], i['status']))
             return
         if options.allmods:
             filtermethods = []
@@ -166,7 +166,7 @@ if __name__ == '__main__':
                     result[modid] = {'name': name, 'version': version}
         if result:
             for i in sorted(result):
-                print("%s :  %s | %s (%s)" %(i,result[i]['name'],result[i]['version'],INSTALLED.modstatus(i)))
+                print("%s :  %s | %s (%s)" %(i,result[i]['name'], result[i]['version'], INSTALLED.modstatus(i)))
 
 
     def show_module():
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with show,install, uninstall and upgrade.')
     parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
     parser.add_argument('--recommends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with recommended mods. Default: ask.')
-    parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with sugested mods. Default: no (do not install).')
+    parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with suggested mods. Default: no (do not install).')
 
     parser.epilog = 'Actions:\n'
     for i in sorted(actions.keys()):

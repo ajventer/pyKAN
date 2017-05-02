@@ -1,6 +1,6 @@
 #Manages and provides access to the pykan specific settings files.
 #To files are kept. One in $HOME/.pykan.json which stores the paths to
-#all registered KSP installs. One in each KSPDIR/PYKAN/pykan_settings.json 
+#all registered KSP installs. One in each KSPDIR/PYKAN/pykan_settings.json
 #which stores all other settings specific to each install.
 
 import json
@@ -31,12 +31,12 @@ class PyKANSettings(object):
             util.debug('Found KSP directory')
             self.KSPSettingsFile = os.path.join(KSPDIR,'PYKAN','pykan_settings.json')
             util.mkdir_p(os.path.dirname(self.KSPSettingsFile))
-            self.KSPSettings=util.ReadJsonFromFile(self.KSPSettingsFile,self.KSPSettings,create=True)            
+            self.KSPSettings=util.ReadJsonFromFile(self.KSPSettingsFile,self.KSPSettings,create=True)
             for i in ['minKSPversion','maxKSPversion']:
                 util.debug('Checking %s: %s' % (i,self.KSPSettings.get(i,None)))
                 v = None
                 if self.KSPSettings.get(i,None) == None:
-                    util.debug('%s is not set - parsing KSP readme.txt')
+                    util.debug('%s is not set - parsing KSP readme.txt' %i)
                     data = open(os.path.join(KSPDIR,'readme.txt'),'rb').read()
                     d = str(data)
                     for line in d.split('\\n'):
@@ -136,16 +136,3 @@ class PyKANSettings(object):
 
     def __len__(self):
         return len(list(self.SharedSettings.keys())) + len(list(self.KSPSettings.keys()))
-
-
-
-
-
-
-
-
-
-
-
-
-
