@@ -36,7 +36,7 @@ class PyKANSettings(object):
                 util.debug('Checking %s: %s' % (i,self.KSPSettings.get(i,None)))
                 v = None
                 if self.KSPSettings.get(i,None) == None:
-                    util.debug('%s is not set - parsing KSP readme.txt')
+                    util.debug('%s is not set - parsing KSP readme.txt' %i)
                     data = open(os.path.join(KSPDIR,'readme.txt'),'rb').read()
                     d = data.decode('utf-8')
                     for line in d.split('\\n'):
