@@ -38,9 +38,9 @@ class PyKANSettings(object):
                 if self.KSPSettings.get(i,None) == None:
                     util.debug('%s is not set - parsing KSP readme.txt')
                     data = open(os.path.join(KSPDIR,'readme.txt'),'rb').read()
-                    d = data
-                    for line in d.split(b'\\n'):
-                        if line.startswith(b'Version'):
+                    d = data.decode('utf-8')
+                    for line in d.split('\\n'):
+                        if line.startswith('Version'):
                             v = str(version.Version(line.split()[1]))
                             util.debug('Found value for %s: %s' %(i,v))
                             break
