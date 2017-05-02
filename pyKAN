@@ -195,7 +195,7 @@ if __name__ == '__main__':
             done = True
             try:
                 MM = ModManager(mods, settings,repo)
-                downloadlist += MM.get_download_list(options.reccomends,options.suggests, blacklist)
+                downloadlist += MM.get_download_list(options.recommends,options.suggests, blacklist)
             except Exception as e:
                 if isinstance(e,MultiProviderException):
                     modlist = str(e).split(',')
@@ -319,7 +319,7 @@ if __name__ == '__main__':
     parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version. Use with list_modules.')
     parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with show,install, uninstall and upgrade.')
     parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
-    parser.add_argument('--reccomends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with reccomended mods. Default: ask.')
+    parser.add_argument('--recommends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with recommended mods. Default: ask.')
     parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with sugested mods. Default: no (do not install).')
 
     parser.epilog = 'Actions:\n'
