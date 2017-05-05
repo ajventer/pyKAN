@@ -168,7 +168,6 @@ if __name__ == '__main__':
             for i in sorted(result):
                 print("%s :  %s | %s (%s)" %(i,result[i]['name'], result[i]['version'], INSTALLED.modstatus(i)))
 
-
     def show_module():
         if not options.module:
             util.error('Must specify --module with show')
@@ -270,7 +269,6 @@ if __name__ == '__main__':
             print ('\t%s %s -> %s' %(u[0],u[2],u[1]))
         return [i[0] for i in up]
 
-
     def upgrade():
         uplist = []
         for i  in upgradeable():
@@ -350,9 +348,7 @@ if __name__ == '__main__':
 
     if settings.KSPDIR:
         repo = ckanRepo.CkanRepo(settings)
-
         INSTALLED = Installed(settings,repo)
-
         settings.reload()
         print("Using KSP Directory: ",settings.KSPDIR)
 

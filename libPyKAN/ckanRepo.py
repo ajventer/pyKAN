@@ -3,7 +3,6 @@ import json
 import os
 import glob
 import tarfile
-import glob
 from .installed import Installed
 from .filters import Filter
 from .version import Version
