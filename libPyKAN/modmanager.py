@@ -22,7 +22,7 @@ class ConfirmException(Exception):
     pass
 
 class ConflictException(Exception):
-    pass    
+    pass
 
 
 class ModManager(object):
@@ -59,8 +59,8 @@ class ModManager(object):
                 for d in dirs:
                     dname = os.path.join(root,d)
                     if d == find or is_regex and re.findall(find,dname):
-                            util.debug('Clearing directory %s' % dname)
-                            shutil.rmtree(dname)
+                        util.debug('Clearing directory %s' % dname)
+                        shutil.rmtree(dname)
             else:
                 for f in files:
                     fname = os.path.join(root,f)
