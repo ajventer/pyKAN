@@ -59,7 +59,7 @@ class Filter(object):
         result = []
         for k in repoentry:
             try:
-                result += re.findall(needle,str(repoentry[k]),re.IGNORECASE)
+                result += re.findall(needle,str(repoentry[k]),re.IGNORECASE) #pylint: disable=E1101
             except:
                 continue
         return len(result) > 0
