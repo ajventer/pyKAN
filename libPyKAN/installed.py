@@ -134,4 +134,3 @@ class Installed(object):
             util.debug('Matches: %s' % matches)
             if matches:
                 self.add_mod(name, matches[0],'manual_modules',self.modfiles(names_found[name]['path']))
-

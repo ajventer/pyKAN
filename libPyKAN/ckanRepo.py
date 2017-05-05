@@ -3,7 +3,6 @@ import json
 import os
 import glob
 import tarfile
-import glob
 from .installed import Installed
 from .filters import Filter
 from .version import Version
@@ -37,8 +36,8 @@ class CkanRepo(object):
         uris = []
         for i in self.settings.repos():
             uris.append({'uri': i, 'sha': None, 'id': None})
-        repofiles = util.download_files(uris, 
-            self.cachedir, 
+        repofiles = util.download_files(uris,
+            self.cachedir,
             self.settings['DownLoadRetryMax'])
         print("Parsing repository contents")
         self.read_repository_data(True)
@@ -48,7 +47,7 @@ class CkanRepo(object):
         ins.get_manual_mods()
 
     def find_latest(self, identifier, filters=None, filterargs={}):
-        if filters is None: 
+        if filters is None:
             filters = [Filter(self.settings).compatible]
         result = {}
         for i in self.list_modules(filters,filterargs):
@@ -131,7 +130,7 @@ class CkanRepo(object):
                 yield self.repodata[i]
             else:
                 valid=True
-                for f in filtermethods:                   
+                for f in filtermethods:
                     if not f(self.repodata[i],**filterargs):
                         valid=False
                         break
@@ -142,5 +141,3 @@ class CkanRepo(object):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
-

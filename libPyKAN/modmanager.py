@@ -13,16 +13,16 @@ import shutil #Warning to windows porters - not sure how well this works on wind
 #This way the handling of input is kept out of the library and so the same code will work
 #unalterated for the QT version as is used by the commandline version.
 class MultiProviderException(Exception):
-    pass    
+    pass
 
 class MissingDependencyException(Exception):
     pass
 
 class ConfirmException(Exception):
-    pass    
+    pass
 
 class ConflictException(Exception):
-    pass    
+    pass
 
 
 class ModManager(object):
@@ -59,8 +59,8 @@ class ModManager(object):
                 for d in dirs:
                     dname = os.path.join(root,d)
                     if d == find or is_regex and re.findall(find,dname):
-                            util.debug('Clearing directory %s' % dname)
-                            shutil.rmtree(dname)
+                        util.debug('Clearing directory %s' % dname)
+                        shutil.rmtree(dname)
             else:
                 for f in files:
                     fname = os.path.join(root,f)
@@ -121,7 +121,7 @@ class ModManager(object):
                             #This actually means CKAN didn't give us any instructions
                             if 'GameData' in member.filename:
                                 util.debug('Found GameData in file path')
-                                #Sigh...really CKAN ? Really ? 
+                                #Sigh...really CKAN ? Really ?
                                 mx = member.filename.split('/')
                                 idx = mx.index('GameData') +1
                                 matched = '/'.join(mx[idx:])
@@ -192,13 +192,13 @@ class ModManager(object):
             self.remove(mod, False)
         self.get_download_list('no','no')
         self.download()
-        self.install()        
+        self.install()
 
 
     def get_download_list(self, recommends='ask', suggests='ask',blacklist=[]):
         #TODO - this algorithm is O(n^2 +1) first thing we optimize after initial release.
-        #There must be a faster way to do this. 
-        #Paralelize maybe ? 
+        #There must be a faster way to do this.
+        #Paralelize maybe ?
         dl_list = {}
         for mod in self.repoentries:
             dl_list[mod['identifier']] = mod
@@ -250,5 +250,3 @@ class ModManager(object):
         for mod in dl_list:
             self.repoentries.append(dl_list[mod])
         return dl_list
-
-
