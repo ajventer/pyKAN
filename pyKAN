@@ -174,11 +174,11 @@ if __name__ == '__main__':
         for mod in list(repo.find_latest(options.module).values()):
             print(json.dumps(mod, indent=8))
 
-    def install_mod():
+    def install_mod(module):
         done = False
         blacklist = []
-        if not options.module:
-            util.error('Must specify --module with install')
+        #if not options.module:
+        #    util.error('Must specify --module with install')
         downloadlist = []
         mods = repo.find_latest(options.module)
         if len(mods) > 1:
@@ -301,9 +301,12 @@ if __name__ == '__main__':
     }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
+
+    #Optional arguments
+
     parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
     parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
-    parser.add_argument('action',default='show_settings',choices=list(actions.keys()))
+    #parser.add_argument('action',default='show_settings',choices=list(actions.keys()))
     parser.add_argument('--key',type=str,default=None,help='The key to change the value off. Only used with change_setting')
     parser.add_argument('--value',type=str,default=None,help='The new value to set for key. Only used with change_setting')
     parser.add_argument('--repo',type=int,default=None,help='The repo index or uri. Used with add_repo and del_repo.')
@@ -320,9 +323,18 @@ if __name__ == '__main__':
     parser.add_argument('--recommends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with recommended mods. Default: ask.')
     parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with suggested mods. Default: no (do not install).')
 
-    parser.epilog = 'Actions:\n'
-    for i in sorted(actions.keys()):
-        parser.epilog = '%s\n*%s:  %s\n' %(parser.epilog,i,actions[i]['help'])
+    #Positional sub arguments
+
+    subparsers = parser.add_subparsers(help='sub-command help')
+
+    parser_install = subparsers.add_parser('install', help='Installs a module')
+    parser_install.add_argument('module', type=str, help='Module to be installed')
+    parser_install.set_defaults(func=install_mod)
+
+
+#    parser.epilog = 'Actions:\n'
+#    for i in sorted(actions.keys()):
+#        parser.epilog = '%s\n*%s:  %s\n' %(parser.epilog,i,actions[i]['help'])
 
     parser.epilog = '%s\nMost list selections can use the numeric index or the text\n%s' %(parser.epilog,
         'Examples:\n%s add_repo --repo 1\n%s add_repo https://github.com/KSP-CKAN/CKAN-meta-dev/archive/RemoteTech-pre.tar.gz ' %(sys.argv[0],sys.argv[0]))
@@ -352,4 +364,6 @@ if __name__ == '__main__':
         settings.reload()
         print("Using KSP Directory: ",settings.KSPDIR)
 
-    actions[options.action]['method']()
+    options.func(options)
+
+    #actions[options.action]['method']()
