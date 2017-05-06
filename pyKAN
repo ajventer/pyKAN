@@ -76,7 +76,7 @@ if __name__ == '__main__':
             print('%s: %s' %(c, i))
             c += 1
 
-    def addkspdir(kspdiradd):
+    def addkspdir(_):
         if not options.kspdir:
             util.error('You must specify --kspdir with a string path when adding a new KSP directory')
         settings.addkspdir(kspdir)
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         settings.save()
         list_repos()
 
-    def update():
+    def update(_):
         repo.update_repository_data()
         print('Repository updated. %s modules in repo' %(len(list(repo.repodata.keys()))))
 
@@ -174,7 +174,7 @@ if __name__ == '__main__':
         for mod in list(repo.find_latest(options.module).values()):
             print(json.dumps(mod, indent=8))
 
-    def install_mod(module):
+    def install_mod(_):
         done = False
         blacklist = []
         #if not options.module:
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         print("Installing modules")
         MM.install()
 
-    def uninstall_mod(module):
+    def uninstall_mod(_):
         if not options.module:
             util.error('Must specify --module with uninstall')
         if not options.module in INSTALLED.all_modnames():
@@ -338,6 +338,9 @@ if __name__ == '__main__':
     parser_addkspdir = subparsers.add_parser('addkspdir', help='Adds KSP directory to the configuration')
     parser_addkspdir.add_argument('kspdir', type=str, help='Path to KSP directory')
     parser_addkspdir.set_defaults(func=addkspdir)
+
+    parser_update = subparsers.add_parser('update', help='Updates repo')
+    parser_update.set_defaults(func=update)
 
 
 #    parser.epilog = 'Actions:\n'
