@@ -76,7 +76,7 @@ if __name__ == '__main__':
             print('%s: %s' %(c, i))
             c += 1
 
-    def addkspdir():
+    def addkspdir(kspdiradd):
         if not options.kspdir:
             util.error('You must specify --kspdir with a string path when adding a new KSP directory')
         settings.addkspdir(kspdir)
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         print("Installing modules")
         MM.install()
 
-    def uninstall_mod():
+    def uninstall_mod(module):
         if not options.module:
             util.error('Must specify --module with uninstall')
         if not options.module in INSTALLED.all_modnames():
@@ -325,11 +325,19 @@ if __name__ == '__main__':
 
     #Positional sub arguments
 
-    subparsers = parser.add_subparsers(help='sub-command help')
+    subparsers = parser.add_subparsers()
 
     parser_install = subparsers.add_parser('install', help='Installs a module')
     parser_install.add_argument('module', type=str, help='Module to be installed')
     parser_install.set_defaults(func=install_mod)
+
+    parser_uninstall = subparsers.add_parser('uninstall', help='Uninstalls a module')
+    parser_uninstall.add_argument('module', type=str, help='Module to be uninstalled')
+    parser_uninstall.set_defaults(func=uninstall_mod)
+
+    parser_addkspdir = subparsers.add_parser('addkspdir', help='Adds KSP directory to the configuration')
+    parser_addkspdir.add_argument('kspdir', type=str, help='Path to KSP directory')
+    parser_addkspdir.set_defaults(func=addkspdir)
 
 
 #    parser.epilog = 'Actions:\n'
