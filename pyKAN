@@ -174,13 +174,13 @@ if __name__ == '__main__':
         for mod in list(repo.find_latest(options.module).values()):
             print(json.dumps(mod, indent=8))
 
-    def install_mod():
+    def install_mod(module):
         done = False
         blacklist = []
         if not options.module:
             util.error('Must specify --module with install')
         downloadlist = []
-        mods = repo.find_latest(options.module)
+        mods = repo.find_latest(module)
         if len(mods) > 1:
             answer = select_menu('Multiple mods match your search, please select one', list(mods.keys()))
             mods = [mods[list(mods.keys())[answer]]]
@@ -363,5 +363,7 @@ if __name__ == '__main__':
         INSTALLED = Installed(settings,repo)
         settings.reload()
         print("Using KSP Directory: ",settings.KSPDIR)
+
+    options.func(options)
 
     #actions[options.action]['method']()
