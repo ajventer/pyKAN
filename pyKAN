@@ -180,7 +180,7 @@ if __name__ == '__main__':
         if not options.module:
             util.error('Must specify --module with install')
         downloadlist = []
-        mods = repo.find_latest(module)
+        mods = repo.find_latest(options.module)
         if len(mods) > 1:
             answer = select_menu('Multiple mods match your search, please select one', list(mods.keys()))
             mods = [mods[list(mods.keys())[answer]]]
