@@ -177,8 +177,8 @@ if __name__ == '__main__':
     def install_mod(module):
         done = False
         blacklist = []
-        if not options.module:
-            util.error('Must specify --module with install')
+        #if not options.module:
+        #    util.error('Must specify --module with install')
         downloadlist = []
         mods = repo.find_latest(options.module)
         if len(mods) > 1:
