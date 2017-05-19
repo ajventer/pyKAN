@@ -46,7 +46,7 @@ if __name__ == '__main__':
         else:
             print(settings)
 
-    def change_setting():
+    def change_setting(_):
         if options.key == None or options.value == None:
             util.error("changesetting requires --key and --value options")
         key = options.key
@@ -290,8 +290,6 @@ if __name__ == '__main__':
 
 
     actions = {
-        'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
-        'change_setting': {'method': change_setting,'help':'Change a setting. You must give --key and --value.'},
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
     }
 
@@ -369,6 +367,11 @@ if __name__ == '__main__':
 
     parser_showsetting = subparsers.add_parser('show_settings', help='Show editable settings and their values')
     parser_showsetting.set_defaults(func=show_settings)
+
+    parser_changesetting = subparsers.add_parser('change_setting', help='Show module full details')
+    parser_changesetting.add_argument('key', type=str, help='The key to change the value off')
+    parser_changesetting.add_argument('value', type=str, help='The new value to set for key')
+    parser_changesetting.set_defaults(func=change_setting)
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
