@@ -358,6 +358,8 @@ if __name__ == '__main__':
     parser_upgrade.set_defaults(func=upgrade)
     parser_upgrade.add_argument('module', type=str, help='Mods to be upgraded', nargs='*')
 
+    parser_listkspdirs = subparsers.add_parser('listkspdirs', help='List KSP directories we manage')
+    parser_listkspdirs.set_defaults(func=listkspdirs)
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
