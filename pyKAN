@@ -181,6 +181,8 @@ if __name__ == '__main__':
         #    util.error('Must specify --module with install')
         downloadlist = []
         mods = []
+        if len(options.module) > 1 and options.version:
+            util.error('Using --version with multiple mods is unsupported')
         for mod_opt in options.module:
             mod = repo.find_latest(mod_opt)
             if len(mod) > 1:
