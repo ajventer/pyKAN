@@ -345,7 +345,7 @@ if __name__ == '__main__':
     parser_listrepo = subparsers.add_parser('list_repos', help='List added repository')
     parser_listrepo.set_defaults(func=list_repos)
 
-    parser_upgrade = subparsers.add_parser('upgrade', help='Upgrades installed mods. If empty, upgrade all installed mods')
+    parser_upgrade = subparsers.add_parser('upgrade', help='Upgrades selected mods. If empty, upgrade all installed mods')
     parser_upgrade.set_defaults(func=upgrade)
     parser_upgrade.add_argument('module', type=str, help='Mods to be upgraded', nargs='*')
 
