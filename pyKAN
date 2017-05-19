@@ -250,8 +250,10 @@ if __name__ == '__main__':
             MM.remove(mod)
 
     def upgradeable():
+        mods = [] 
         if options.module:
-            mods = [i for i in repo.find_latest(options.module) if i in INSTALLED.all_modnames()]
+            for mod_opt in options.modules:
+                mods += [i for i in repo.find_latest(mod_opt) if i in INSTALLED.all_modnames()]
         else:
             mods = list(INSTALLED.all_modnames())
         upgradeables = []
@@ -358,8 +360,12 @@ if __name__ == '__main__':
     parser_delrepo.set_defaults(func=del_repo)
     parser_delrepo.add_argument('repo', type=str, help='The repo index or uri')
 
-    parser_listrepo = subparsers.add_parser('list_repos', help='List addedrepository')
+    parser_listrepo = subparsers.add_parser('list_repos', help='List added repository')
     parser_listrepo.set_defaults(func=list_repos)
+
+    parser_upgrade = subparsers.add_parser('upgrade', help='Upgrades installed mods. If empty, upgrade all installed mods')
+    parser_upgrade.set_defaults(func=upgrade)
+    parser_upgrade.add_argument('module', type=str, help='Mods to be upgraded', nargs='*')
 
 
 #    parser.epilog = 'Actions:\n'
