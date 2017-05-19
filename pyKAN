@@ -79,19 +79,19 @@ if __name__ == '__main__':
         if not options.kspdir:
             util.error('You must specify --kspdir with a string path when adding a new KSP directory')
         settings.addkspdir(kspdir)
-        listkspdirs()
+        listkspdirs('_')
 
     def delkspdir():
         if not options.kspdir:
             util.error('You must specify --kspdir when removing a KSP directory')
         settings.delkspdir(kspdir)
-        listkspdirs()
+        listkspdirs('_')
 
     def defaultksp():
         if not options.kspdir:
             util.error('You must specify --kspdir to change the default KSP directory ')
         settings.setdefaultksp(kspdir)
-        listkspdirs()
+        listkspdirs('_')
 
     def list_repos(_):
         if not settings.KSPDIR:
