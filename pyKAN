@@ -170,8 +170,9 @@ if __name__ == '__main__':
     def show_module(_):
         if not options.module:
             util.error('Must specify --module with show')
-        for mod in list(repo.find_latest(options.module).values()):
-            print(json.dumps(mod, indent=8))
+        for mod_opt in options.module:
+            for mod in list(repo.find_latest(mod_opt).values()):
+                print(json.dumps(mod, indent=8))
 
     def install_mod(_):
         done = False
@@ -359,6 +360,10 @@ if __name__ == '__main__':
 
     parser_listkspdirs = subparsers.add_parser('listkspdirs', help='List KSP directories we manage')
     parser_listkspdirs.set_defaults(func=listkspdirs)
+
+    parser_show = subparsers.add_parser('show', help='Uninstalls a module')
+    parser_show.add_argument('module', type=str, help='Show full details on a particular module', nargs='+')
+    parser_show.set_defaults(func=show_module)
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
