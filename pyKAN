@@ -358,7 +358,7 @@ if __name__ == '__main__':
     parser_delrepo.set_defaults(func=del_repo)
     parser_delrepo.add_argument('repo', type=str, help='The repo index or uri')
 
-    parser_listrepo = subparsers.add_parser('list_repo', help='List addedrepository')
+    parser_listrepo = subparsers.add_parser('list_repos', help='List addedrepository')
     parser_listrepo.set_defaults(func=list_repos)
 
 
