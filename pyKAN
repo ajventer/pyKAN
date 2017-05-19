@@ -346,6 +346,11 @@ if __name__ == '__main__':
     parser_update = subparsers.add_parser('update', help='Updates repo')
     parser_update.set_defaults(func=update)
 
+    parser_delkspdir = subparsers.add_parser('delkspdir', help='Deletes KSP directory from the configuration')
+    parser_delkspdir.add_argument('kspdir', type=str, help='Path to KSP directory')
+    parser_delkspdir.set_defaults(func=delkspdir)
+
+
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
