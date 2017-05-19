@@ -190,7 +190,7 @@ if __name__ == '__main__':
                 try:
                     modid = list(mod.keys())[0]
                 except IndexError:
-                    util.error('Could not find mod %s' % options.module)
+                    util.error('Could not find mod %s' % mod_opt)
                 mods += [mod[modid]]
         while not done:
             done = True
