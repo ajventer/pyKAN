@@ -361,7 +361,7 @@ if __name__ == '__main__':
     parser_listkspdirs = subparsers.add_parser('listkspdirs', help='List KSP directories we manage')
     parser_listkspdirs.set_defaults(func=listkspdirs)
 
-    parser_show = subparsers.add_parser('show', help='Uninstalls a module')
+    parser_show = subparsers.add_parser('show', help='Show module full details')
     parser_show.add_argument('module', type=str, help='Show full details on a particular module', nargs='+')
     parser_show.set_defaults(func=show_module)
 
