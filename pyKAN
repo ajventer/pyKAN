@@ -356,7 +356,7 @@ if __name__ == '__main__':
     parser_show.add_argument('module', type=str, help='Show full details on a particular module', nargs='+')
     parser_show.set_defaults(func=show_module)
 
-    parser_defaultksp = subparsers.add_parser('default_ksp', help='Show module full details')
+    parser_defaultksp = subparsers.add_parser('default_ksp', help='Set default KSP directory for installation')
     parser_defaultksp.add_argument('kspdir', type=str, help='Path to KSP directory')
     parser_defaultksp.set_defaults(func=defaultksp)
 
