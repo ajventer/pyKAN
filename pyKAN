@@ -40,7 +40,7 @@ def confirm(msg='Continue [y/n]'):
 
 
 if __name__ == '__main__':
-    def show_settings():
+    def show_settings(_):
         if options.allsettings:
             print(settings.view_all())
         else:
@@ -366,6 +366,9 @@ if __name__ == '__main__':
     parser_defaultksp = subparsers.add_parser('default_ksp', help='Show module full details')
     parser_defaultksp.add_argument('kspdir', type=str, help='Path to KSP directory')
     parser_defaultksp.set_defaults(func=defaultksp)
+
+    parser_showsetting = subparsers.add_parser('show_settings', help='Show editable settings and their values')
+    parser_showsetting.set_defaults(func=show_settings)
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
