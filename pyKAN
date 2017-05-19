@@ -250,7 +250,7 @@ if __name__ == '__main__':
             MM.remove(mod)
 
     def upgradeable():
-        mods = [] 
+        mods = []
         if options.module:
             for mod_opt in options.modules:
                 mods += [i for i in repo.find_latest(mod_opt) if i in INSTALLED.all_modnames()]
@@ -292,18 +292,9 @@ if __name__ == '__main__':
         'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
         'change_setting': {'method': change_setting,'help':'Change a setting. You must give --key and --value.'},
         'listkspdirs': {'method': listkspdirs,'help': 'List the KSP installation directories we manage'},
-        'addkspdir': {'method': addkspdir, 'help': 'Adds a new KSP directory to the configuration. --kspdir'},
-        'delkspdir': {'method': delkspdir,'help':'Deletes a KSP directory from the configuration. You must specify --kspdir'},
         'default_ksp': {'method': defaultksp,'help': 'Changes the default KSP directory used if no --kspdir is specified'},
-        'list_repos': {'method': list_repos,'help': 'List the possible upstream repos and indicates which ones are in use'},
-        'add_repo': {'method': add_repo,'help':'Activate another repository for upstream sources. You must specify --repo'},
-        'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository'},
-        'update': {'method':update, 'help': 'Update the mod data from the repositories'},
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
         'show': {'method': show_module, 'help':'Show full details on a particular module. Needs --module option.'},
-        'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'},
-        'upgrade': {'method': upgrade, 'help': 'Upgrade modules. If --module is not given, upgrade all installed modules to latest version.'},
-        'uninstall': {'method': uninstall_mod, 'help': 'Remove a module. Needs --module option.'}
     }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
