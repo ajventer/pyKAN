@@ -69,7 +69,7 @@ if __name__ == '__main__':
         print("Updated settings:", settings)
         settings.save()
 
-    def listkspdirs():
+    def listkspdirs(_):
         c = 0
         for i in settings['KSPDIRS']:
             print('%s: %s' %(c, i))
@@ -291,7 +291,6 @@ if __name__ == '__main__':
     actions = {
         'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
         'change_setting': {'method': change_setting,'help':'Change a setting. You must give --key and --value.'},
-        'listkspdirs': {'method': listkspdirs,'help': 'List the KSP installation directories we manage'},
         'default_ksp': {'method': defaultksp,'help': 'Changes the default KSP directory used if no --kspdir is specified'},
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
         'show': {'method': show_module, 'help':'Show full details on a particular module. Needs --module option.'},
