@@ -233,11 +233,13 @@ if __name__ == '__main__':
         MM.install()
 
     def uninstall_mod(_):
+        mod = []
         if not options.module:
             util.error('Must specify --module with uninstall')
-        if not options.module in INSTALLED.all_modnames():
-            util.error('Cannot uninstall %s as it is not installed' %options.module)
-        mod = [INSTALLED[options.module]]
+        for mod_opt in options.module:
+            if not mod_opt in INSTALLED.all_modnames():
+                util.error('Cannot uninstall %s as it is not installed' %mod_opt)
+            mod += [INSTALLED[mod_opt]]
         MM = ModManager(mod, settings,repo)
         remlist = MM.uninstall_list()
         print("About to remove: \n\t%s" %('\n\t'.join(remlist)))
@@ -334,7 +336,7 @@ if __name__ == '__main__':
     parser_install.set_defaults(func=install_mod)
 
     parser_uninstall = subparsers.add_parser('uninstall', help='Uninstalls a module')
-    parser_uninstall.add_argument('module', type=str, help='Module to be uninstalled')
+    parser_uninstall.add_argument('module', type=str, help='Module to be uninstalled', nargs='+')
     parser_uninstall.set_defaults(func=uninstall_mod)
 
     parser_addkspdir = subparsers.add_parser('addkspdir', help='Adds KSP directory to the configuration')
