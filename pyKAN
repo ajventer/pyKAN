@@ -87,7 +87,7 @@ if __name__ == '__main__':
         settings.delkspdir(kspdir)
         listkspdirs('_')
 
-    def defaultksp():
+    def defaultksp(_):
         if not options.kspdir:
             util.error('You must specify --kspdir to change the default KSP directory ')
         settings.setdefaultksp(kspdir)
@@ -292,7 +292,6 @@ if __name__ == '__main__':
     actions = {
         'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
         'change_setting': {'method': change_setting,'help':'Change a setting. You must give --key and --value.'},
-        'default_ksp': {'method': defaultksp,'help': 'Changes the default KSP directory used if no --kspdir is specified'},
         'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
     }
 
@@ -363,6 +362,10 @@ if __name__ == '__main__':
     parser_show = subparsers.add_parser('show', help='Show module full details')
     parser_show.add_argument('module', type=str, help='Show full details on a particular module', nargs='+')
     parser_show.set_defaults(func=show_module)
+
+    parser_defaultksp = subparsers.add_parser('default_ksp', help='Show module full details')
+    parser_defaultksp.add_argument('kspdir', type=str, help='Path to KSP directory')
+    parser_defaultksp.set_defaults(func=defaultksp)
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
