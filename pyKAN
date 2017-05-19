@@ -21,7 +21,6 @@ def select_menu(msg, options):
         print(msg)
         for i in options:
             print('\t%s: %s' %(options.index(i),i))
-
         answer = input('Choice:')
         valid_answer = answer.isdigit() and int(answer) >= 0 and int(answer) < len(options)
         if not valid_answer:
@@ -181,10 +180,11 @@ if __name__ == '__main__':
         #    util.error('Must specify --module with install')
         downloadlist = []
         mods = []
-        for mod in options.module:
-            mod = repo.find_latest(options.module)
-            if len(mods) > 1:
-                answer = select_menu('Multiple mods match your search, please select one', list(mod.keys()))
+        for mod_opt in options.module:
+            mod = repo.find_latest(mod_opt)
+            if len(mod) > 1:
+                dispstr = 'Multiple mods match search term ' + mod_opt + ' , please select one'
+                answer = select_menu(dispstr, list(mod.keys()))
                 mods += [mods[list(mod.keys())[answer]]]
             else:
                 try:
