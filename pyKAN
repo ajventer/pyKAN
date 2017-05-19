@@ -168,7 +168,7 @@ if __name__ == '__main__':
             for i in sorted(result):
                 print("%s :  %s | %s (%s)" %(i,result[i]['name'], result[i]['version'], INSTALLED.modstatus(i)))
 
-    def show_module():
+    def show_module(_):
         if not options.module:
             util.error('Must specify --module with show')
         for mod in list(repo.find_latest(options.module).values()):
@@ -180,16 +180,18 @@ if __name__ == '__main__':
         #if not options.module:
         #    util.error('Must specify --module with install')
         downloadlist = []
-        mods = repo.find_latest(options.module)
-        if len(mods) > 1:
-            answer = select_menu('Multiple mods match your search, please select one', list(mods.keys()))
-            mods = [mods[list(mods.keys())[answer]]]
-        else:
-            try:
-                modid = list(mods.keys())[0]
-            except IndexError:
-                util.error('Could not find mod %s' % options.module)
-            mods = [mods[modid]]
+        mods = []
+        for mod in options.module:
+            mod = repo.find_latest(options.module)
+            if len(mods) > 1:
+                answer = select_menu('Multiple mods match your search, please select one', list(mod.keys()))
+                mods += [mods[list(mod.keys())[answer]]]
+            else:
+                try:
+                    modid = list(mod.keys())[0]
+                except IndexError:
+                    util.error('Could not find mod %s' % options.module)
+                mods += [mod[modid]]
         while not done:
             done = True
             try:
@@ -328,7 +330,7 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers()
 
     parser_install = subparsers.add_parser('install', help='Installs a module')
-    parser_install.add_argument('module', type=str, help='Module to be installed')
+    parser_install.add_argument('module', type=str, help='Module to be installed', nargs='+')
     parser_install.set_defaults(func=install_mod)
 
     parser_uninstall = subparsers.add_parser('uninstall', help='Uninstalls a module')
