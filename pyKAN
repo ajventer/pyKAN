@@ -299,7 +299,6 @@ if __name__ == '__main__':
 
     parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
     parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
-    #parser.add_argument('action',default='show_settings',choices=list(actions.keys()))
     parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
     parser.add_argument('--allmods',action='store_true',help="Show the module list without any filters. Use with list_modules.")
     parser.add_argument('--search',type=str,default=None,help="Search for module by regular expression. Use with list_modules.")
