@@ -93,7 +93,7 @@ if __name__ == '__main__':
         settings.setdefaultksp(kspdir)
         listkspdirs()
 
-    def list_repos():
+    def list_repos(_):
         if not settings.KSPDIR:
             util.error('You must set up a KSP directory before you can manage repositories')
         c = 0
@@ -105,7 +105,7 @@ if __name__ == '__main__':
                 i['x_comment']))
             c += 1
 
-    def add_repo():
+    def add_repo(_):
         if not options.repo:
             util.error('You must give a repository index (from list_repos output) to add a repository')
         if options.repo < 0 or options.repo >= len(repo.available_repo_list()):
@@ -115,7 +115,7 @@ if __name__ == '__main__':
         settings.save()
         list_repos()
 
-    def del_repo():
+    def del_repo(_):
         if options.repo == 0:
             util.error('Error: you cannot deactivate the default repository.')
         if not options.repo:
@@ -350,6 +350,16 @@ if __name__ == '__main__':
     parser_delkspdir.add_argument('kspdir', type=str, help='Path to KSP directory')
     parser_delkspdir.set_defaults(func=delkspdir)
 
+    parser_addrepo = subparsers.add_parser('add_repo', help='Activate another repository for upstream sources')
+    parser_addrepo.add_argument('repo', type=str, help='The repo index or uri')
+    parser_addrepo.set_defaults(func=add_repo)
+
+    parser_delrepo = subparsers.add_parser('del_repo', help='Deletes a repository')
+    parser_delrepo.set_defaults(func=del_repo)
+    parser_delrepo.add_argument('repo', type=str, help='The repo index or uri')
+
+    parser_listrepo = subparsers.add_parser('list_repo', help='List addedrepository')
+    parser_listrepo.set_defaults(func=list_repo)
 
 
 #    parser.epilog = 'Actions:\n'
