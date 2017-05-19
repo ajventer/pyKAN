@@ -113,7 +113,7 @@ if __name__ == '__main__':
         settings.repos().append(repo.available_repo_list()[options.repo]['uri'])
         settings.KSPSettings['Repos'] = list(set(settings.repos()))
         settings.save()
-        list_repos()
+        list_repos('_')
 
     def del_repo(_):
         if options.repo == 0:
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         uri = repo.available_repo_list()[options.repo]['uri']
         del(settings.repos()[settings.repos().index(uri)])
         settings.save()
-        list_repos()
+        list_repos('_')
 
     def update(_):
         repo.update_repository_data()
@@ -359,7 +359,7 @@ if __name__ == '__main__':
     parser_delrepo.add_argument('repo', type=str, help='The repo index or uri')
 
     parser_listrepo = subparsers.add_parser('list_repo', help='List addedrepository')
-    parser_listrepo.set_defaults(func=list_repo)
+    parser_listrepo.set_defaults(func=list_repos)
 
 
 #    parser.epilog = 'Actions:\n'
