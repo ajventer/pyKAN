@@ -401,4 +401,4 @@ if __name__ == '__main__':
         settings.reload()
         print("Using KSP Directory: ",settings.KSPDIR)
 
-    actions[options.action]['method']()
+    options.func(options)
