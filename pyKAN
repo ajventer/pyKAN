@@ -291,9 +291,6 @@ if __name__ == '__main__':
         print("Modules upgraded")
 
 
-    actions = {
-        'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
-    }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
 
