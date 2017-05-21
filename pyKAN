@@ -21,7 +21,6 @@ def select_menu(msg, options):
         print(msg)
         for i in options:
             print('\t%s: %s' %(options.index(i),i))
-
         answer = input('Choice:')
         valid_answer = answer.isdigit() and int(answer) >= 0 and int(answer) < len(options)
         if not valid_answer:
@@ -41,13 +40,13 @@ def confirm(msg='Continue [y/n]'):
 
 
 if __name__ == '__main__':
-    def show_settings():
+    def show_settings(_):
         if options.allsettings:
             print(settings.view_all())
         else:
             print(settings)
 
-    def change_setting():
+    def change_setting(_):
         if options.key == None or options.value == None:
             util.error("changesetting requires --key and --value options")
         key = options.key
@@ -70,31 +69,31 @@ if __name__ == '__main__':
         print("Updated settings:", settings)
         settings.save()
 
-    def listkspdirs():
+    def listkspdirs(_):
         c = 0
         for i in settings['KSPDIRS']:
             print('%s: %s' %(c, i))
             c += 1
 
-    def addkspdir():
+    def addkspdir(_):
         if not options.kspdir:
             util.error('You must specify --kspdir with a string path when adding a new KSP directory')
         settings.addkspdir(kspdir)
-        listkspdirs()
+        listkspdirs('_')
 
     def delkspdir():
         if not options.kspdir:
             util.error('You must specify --kspdir when removing a KSP directory')
         settings.delkspdir(kspdir)
-        listkspdirs()
+        listkspdirs('_')
 
-    def defaultksp():
+    def defaultksp(_):
         if not options.kspdir:
             util.error('You must specify --kspdir to change the default KSP directory ')
         settings.setdefaultksp(kspdir)
-        listkspdirs()
+        listkspdirs('_')
 
-    def list_repos():
+    def list_repos(_):
         if not settings.KSPDIR:
             util.error('You must set up a KSP directory before you can manage repositories')
         c = 0
@@ -106,7 +105,7 @@ if __name__ == '__main__':
                 i['x_comment']))
             c += 1
 
-    def add_repo():
+    def add_repo(_):
         if not options.repo:
             util.error('You must give a repository index (from list_repos output) to add a repository')
         if options.repo < 0 or options.repo >= len(repo.available_repo_list()):
@@ -114,9 +113,9 @@ if __name__ == '__main__':
         settings.repos().append(repo.available_repo_list()[options.repo]['uri'])
         settings.KSPSettings['Repos'] = list(set(settings.repos()))
         settings.save()
-        list_repos()
+        list_repos('_')
 
-    def del_repo():
+    def del_repo(_):
         if options.repo == 0:
             util.error('Error: you cannot deactivate the default repository.')
         if not options.repo:
@@ -126,13 +125,13 @@ if __name__ == '__main__':
         uri = repo.available_repo_list()[options.repo]['uri']
         del(settings.repos()[settings.repos().index(uri)])
         settings.save()
-        list_repos()
+        list_repos('_')
 
-    def update():
+    def update(_):
         repo.update_repository_data()
         print('Repository updated. %s modules in repo' %(len(list(repo.repodata.keys()))))
 
-    def list_modules():
+    def list_modules(_):
         f = filters.Filter(settings)
         filtermethods = [f.compatible]
         filterargs = {}
@@ -168,28 +167,35 @@ if __name__ == '__main__':
             for i in sorted(result):
                 print("%s :  %s | %s (%s)" %(i,result[i]['name'], result[i]['version'], INSTALLED.modstatus(i)))
 
-    def show_module():
+    def show_module(_):
         if not options.module:
             util.error('Must specify --module with show')
-        for mod in list(repo.find_latest(options.module).values()):
-            print(json.dumps(mod, indent=8))
+        for mod_opt in options.module:
+            for mod in list(repo.find_latest(mod_opt).values()):
+                print(json.dumps(mod, indent=8))
 
-    def install_mod():
+    def install_mod(_):
+
         done = False
         blacklist = []
         if not options.module:
             util.error('Must specify --module with install')
         downloadlist = []
-        mods = repo.find_latest(options.module)
-        if len(mods) > 1:
-            answer = select_menu('Multiple mods match your search, please select one', list(mods.keys()))
-            mods = [mods[list(mods.keys())[answer]]]
-        else:
-            try:
-                modid = list(mods.keys())[0]
-            except IndexError:
-                util.error('Could not find mod %s' % options.module)
-            mods = [mods[modid]]
+        mods = []
+        if len(options.module) > 1 and options.version:
+            util.error('Using --version with multiple mods is unsupported')
+        for mod_opt in options.module:
+            mod = repo.find_latest(mod_opt)
+            if len(mod) > 1:
+                dispstr = 'Multiple mods match search term ' + mod_opt + ' , please select one'
+                answer = select_menu(dispstr, list(mod.keys()))
+                mods += [mods[list(mod.keys())[answer]]]
+            else:
+                try:
+                    modid = list(mod.keys())[0]
+                except IndexError:
+                    util.error('Could not find mod %s' % mod_opt)
+                mods += [mod[modid]]
         while not done:
             done = True
             try:
@@ -230,12 +236,14 @@ if __name__ == '__main__':
         print("Installing modules")
         MM.install()
 
-    def uninstall_mod():
+    def uninstall_mod(_):
+        mod = []
         if not options.module:
             util.error('Must specify --module with uninstall')
-        if not options.module in INSTALLED.all_modnames():
-            util.error('Cannot uninstall %s as it is not installed' %options.module)
-        mod = [INSTALLED[options.module]]
+        for mod_opt in options.module:
+            if not mod_opt in INSTALLED.all_modnames():
+                util.error('Cannot uninstall %s as it is not installed' %mod_opt)
+            mod += [INSTALLED[mod_opt]]
         MM = ModManager(mod, settings,repo)
         remlist = MM.uninstall_list()
         print("About to remove: \n\t%s" %('\n\t'.join(remlist)))
@@ -246,8 +254,10 @@ if __name__ == '__main__':
             MM.remove(mod)
 
     def upgradeable():
+        mods = []
         if options.module:
-            mods = [i for i in repo.find_latest(options.module) if i in INSTALLED.all_modnames()]
+            for mod_opt in options.modules:
+                mods += [i for i in repo.find_latest(mod_opt) if i in INSTALLED.all_modnames()]
         else:
             mods = list(INSTALLED.all_modnames())
         upgradeables = []
@@ -269,7 +279,7 @@ if __name__ == '__main__':
             print ('\t%s %s -> %s' %(u[0],u[2],u[1]))
         return [i[0] for i in up]
 
-    def upgrade():
+    def upgrade(_):
         uplist = []
         for i  in upgradeable():
             for k,v in repo.find_latest(i).items():
@@ -282,31 +292,10 @@ if __name__ == '__main__':
         print("Modules upgraded")
 
 
-    actions = {
-        'show_settings': {'method': show_settings,'help':'Show editable settings and their values'},
-        'change_setting': {'method': change_setting,'help':'Change a setting. You must give --key and --value.'},
-        'listkspdirs': {'method': listkspdirs,'help': 'List the KSP installation directories we manage'},
-        'addkspdir': {'method': addkspdir, 'help': 'Adds a new KSP directory to the configuration. --kspdir'},
-        'delkspdir': {'method': delkspdir,'help':'Deletes a KSP directory from the configuration. You must specify --kspdir'},
-        'default_ksp': {'method': defaultksp,'help': 'Changes the default KSP directory used if no --kspdir is specified'},
-        'list_repos': {'method': list_repos,'help': 'List the possible upstream repos and indicates which ones are in use'},
-        'add_repo': {'method': add_repo,'help':'Activate another repository for upstream sources. You must specify --repo'},
-        'del_repo': {'method': del_repo,'help':'Deactivate a repository. You must specify --repo. Note you cannot remove the default repository'},
-        'update': {'method':update, 'help': 'Update the mod data from the repositories'},
-        'list_modules': {'method': list_modules,'help': 'List available modules. Optionally filter the list. Default filter is "compatible"'},
-        'show': {'method': show_module, 'help':'Show full details on a particular module. Needs --module option.'},
-        'install': {'method': install_mod, 'help': 'Install a module. Needs --module option.'},
-        'upgrade': {'method': upgrade, 'help': 'Upgrade modules. If --module is not given, upgrade all installed modules to latest version.'},
-        'uninstall': {'method': uninstall_mod, 'help': 'Remove a module. Needs --module option.'}
-    }
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
     parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
     parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
-    parser.add_argument('action',default='show_settings',choices=list(actions.keys()))
-    parser.add_argument('--key',type=str,default=None,help='The key to change the value off. Only used with change_setting')
-    parser.add_argument('--value',type=str,default=None,help='The new value to set for key. Only used with change_setting')
-    parser.add_argument('--repo',type=int,default=None,help='The repo index or uri. Used with add_repo and del_repo.')
     parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
     parser.add_argument('--allmods',action='store_true',help="Show the module list without any filters. Use with list_modules.")
     parser.add_argument('--search',type=str,default=None,help="Search for module by regular expression. Use with list_modules.")
@@ -315,14 +304,74 @@ if __name__ == '__main__':
     parser.add_argument('--upgradeable',action='store_true',help="Show installed mods with upgrades available. Use with list_modules.")
     parser.add_argument('--modversion',type=str,default=None,help='Search for specific mod versions. Use with list_modules.')
     parser.add_argument('--kspversion',type=str,default=None,help='Search for mods for a different KSP version. Use with list_modules.')
-    parser.add_argument('--module',type=str,default=None,help='Name of the module. Use with show,install, uninstall and upgrade.')
     parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
     parser.add_argument('--recommends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with recommended mods. Default: ask.')
     parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with suggested mods. Default: no (do not install).')
 
-    parser.epilog = 'Actions:\n'
-    for i in sorted(actions.keys()):
-        parser.epilog = '%s\n*%s:  %s\n' %(parser.epilog,i,actions[i]['help'])
+
+    #Positional sub arguments
+
+    subparsers = parser.add_subparsers()
+
+    parser_install = subparsers.add_parser('install', help='Installs a module')
+    parser_install.add_argument('module', type=str, help='Module to be installed', nargs='+')
+    parser_install.set_defaults(func=install_mod)
+
+    parser_uninstall = subparsers.add_parser('uninstall', help='Uninstalls a module')
+    parser_uninstall.add_argument('module', type=str, help='Module to be uninstalled', nargs='+')
+    parser_uninstall.set_defaults(func=uninstall_mod)
+
+    parser_addkspdir = subparsers.add_parser('addkspdir', help='Adds KSP directory to the configuration')
+    parser_addkspdir.add_argument('kspdir', type=str, help='Path to KSP directory')
+    parser_addkspdir.set_defaults(func=addkspdir)
+
+    parser_update = subparsers.add_parser('update', help='Updates repo')
+    parser_update.set_defaults(func=update)
+
+    parser_delkspdir = subparsers.add_parser('delkspdir', help='Deletes KSP directory from the configuration')
+    parser_delkspdir.add_argument('kspdir', type=str, help='Path to KSP directory')
+    parser_delkspdir.set_defaults(func=delkspdir)
+
+    parser_addrepo = subparsers.add_parser('add_repo', help='Activate another repository for upstream sources')
+    parser_addrepo.add_argument('repo', type=str, help='The repo index or uri')
+    parser_addrepo.set_defaults(func=add_repo)
+
+    parser_delrepo = subparsers.add_parser('del_repo', help='Deletes a repository')
+    parser_delrepo.set_defaults(func=del_repo)
+    parser_delrepo.add_argument('repo', type=str, help='The repo index or uri')
+
+    parser_listrepo = subparsers.add_parser('list_repos', help='List added repository')
+    parser_listrepo.set_defaults(func=list_repos)
+
+    parser_upgrade = subparsers.add_parser('upgrade', help='Upgrades selected mods. If empty, upgrade all installed mods')
+    parser_upgrade.set_defaults(func=upgrade)
+    parser_upgrade.add_argument('module', type=str, help='Mods to be upgraded', nargs='*')
+
+    parser_listkspdirs = subparsers.add_parser('listkspdirs', help='List KSP directories we manage')
+    parser_listkspdirs.set_defaults(func=listkspdirs)
+
+    parser_show = subparsers.add_parser('show', help='Show module full details')
+    parser_show.add_argument('module', type=str, help='Show full details on a particular module', nargs='+')
+    parser_show.set_defaults(func=show_module)
+
+    parser_defaultksp = subparsers.add_parser('default_ksp', help='Set default KSP directory for installation')
+    parser_defaultksp.add_argument('kspdir', type=str, help='Path to KSP directory')
+    parser_defaultksp.set_defaults(func=defaultksp)
+
+    parser_showsetting = subparsers.add_parser('show_settings', help='Show editable settings and their values')
+    parser_showsetting.set_defaults(func=show_settings)
+
+    parser_changesetting = subparsers.add_parser('change_setting', help='Show module full details')
+    parser_changesetting.add_argument('key', type=str, help='The key to change the value off')
+    parser_changesetting.add_argument('value', type=str, help='The new value to set for key')
+    parser_changesetting.set_defaults(func=change_setting)
+
+    parser_listmodules = subparsers.add_parser('list_modules', help='List available modules')#TODO: Split list_modules to search and list_modules
+    parser_listmodules.set_defaults(func=list_modules)
+
+    parser_searchmod = subparsers.add_parser('search', help='Search available modules')
+    parser_searchmod.add_argument('search', type=str, help='Search for module by regular expression')
+    parser_searchmod.set_defaults(func=list_modules)
 
     parser.epilog = '%s\nMost list selections can use the numeric index or the text\n%s' %(parser.epilog,
         'Examples:\n%s add_repo --repo 1\n%s add_repo https://github.com/KSP-CKAN/CKAN-meta-dev/archive/RemoteTech-pre.tar.gz ' %(sys.argv[0],sys.argv[0]))
