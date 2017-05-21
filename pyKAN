@@ -175,10 +175,11 @@ if __name__ == '__main__':
                 print(json.dumps(mod, indent=8))
 
     def install_mod(_):
+
         done = False
         blacklist = []
-        #if not options.module:
-        #    util.error('Must specify --module with install')
+        if not options.module:
+            util.error('Must specify --module with install')
         downloadlist = []
         mods = []
         if len(options.module) > 1 and options.version:
@@ -293,9 +294,6 @@ if __name__ == '__main__':
 
 
     parser = argparse.ArgumentParser(description = 'Python client for CKAN data',formatter_class=RawTextHelpFormatter)
-
-    #Optional arguments
-
     parser.add_argument('--kspdir',type=str,default=None,action='store',help='The KSP directory to work with. Can be a full path or an index from the list.')
     parser.add_argument('--debug',action='store_true',help='Print (a great deal off) verbose debug messages to stderr')
     parser.add_argument('--allsettings',action='store_true',help='Option to showsettings to show all settings, not just the ones that can be directly edited with change_setting')
@@ -309,6 +307,7 @@ if __name__ == '__main__':
     parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
     parser.add_argument('--recommends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with recommended mods. Default: ask.')
     parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with suggested mods. Default: no (do not install).')
+
 
     #Positional sub arguments
 
@@ -374,10 +373,6 @@ if __name__ == '__main__':
     parser_searchmod.add_argument('search', type=str, help='Search for module by regular expression')
     parser_searchmod.set_defaults(func=list_modules)
 
-#    parser.epilog = 'Actions:\n'
-#    for i in sorted(actions.keys()):
-#        parser.epilog = '%s\n*%s:  %s\n' %(parser.epilog,i,actions[i]['help'])
-
     parser.epilog = '%s\nMost list selections can use the numeric index or the text\n%s' %(parser.epilog,
         'Examples:\n%s add_repo --repo 1\n%s add_repo https://github.com/KSP-CKAN/CKAN-meta-dev/archive/RemoteTech-pre.tar.gz ' %(sys.argv[0],sys.argv[0]))
 
@@ -406,6 +401,4 @@ if __name__ == '__main__':
         settings.reload()
         print("Using KSP Directory: ",settings.KSPDIR)
 
-    options.func(options)
-
-    #actions[options.action]['method']()
+    actions[options.action]['method']()
