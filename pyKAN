@@ -131,7 +131,7 @@ if __name__ == '__main__':
         repo.update_repository_data()
         print('Repository updated. %s modules in repo' %(len(list(repo.repodata.keys()))))
 
-    def list_modules():
+    def list_modules(_):
         f = filters.Filter(settings)
         filtermethods = [f.compatible]
         filterargs = {}
@@ -278,7 +278,7 @@ if __name__ == '__main__':
             print ('\t%s %s -> %s' %(u[0],u[2],u[1]))
         return [i[0] for i in up]
 
-    def upgrade():
+    def upgrade(_):
         uplist = []
         for i  in upgradeable():
             for k,v in repo.find_latest(i).items():
@@ -372,6 +372,10 @@ if __name__ == '__main__':
 
     parser_listmodules = subparsers.add_parser('list_modules', help='List available modules')#TODO: Split list_modules to search and list_modules
     parser_listmodules.set_defaults(func=list_modules)
+
+    parser_searchmod = subparsers.add_parser('search', help='Search available modules')
+    parser_searchmod.add_argument('search', type=str, help='Search for module by regular expression')
+    parser_searchmod.set_defaults(func=list_modules)
 
 #    parser.epilog = 'Actions:\n'
 #    for i in sorted(actions.keys()):
