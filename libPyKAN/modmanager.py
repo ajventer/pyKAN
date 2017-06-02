@@ -228,7 +228,7 @@ class ModManager(object):
                                 continue
                             found =  self.repo.find_latest(m['name'])
                             if not found and key is  'depends': #Failing to find a suggestion is not a crisis
-                                raise MissingDependencyException('Could not find module %s required by %s' %(m['name'],mod))
+                                raise MissingDependencyException('Could not find module %s required by %s' %(m['name'],mod['identifier']))
                             if len(found) > 1:
                                 fnd = [i for i in found if i in dl_list or i in self.installed.all_modnames()]
                                 if not fnd:
