@@ -189,7 +189,7 @@ if __name__ == '__main__':
             if len(mod) > 1:
                 dispstr = 'Multiple mods match search term ' + mod_opt + ' , please select one'
                 answer = select_menu(dispstr, list(mod.keys()))
-                mods += [mods[list(mod.keys())[answer]]]
+                mods += [mod[list(mod.keys())[answer]]]
             else:
                 try:
                     modid = list(mod.keys())[0]
