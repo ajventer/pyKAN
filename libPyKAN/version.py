@@ -40,13 +40,13 @@ class Version(object):
         for i in versionlist:
                 #We need a common type for everything to get consistent comparisons
                 #Strings are the most universal and numeric ones compare fairly well.
-                i = str(i)
-                #But extra leading zeroes screw things up
-                while i.startswith('0') and len(i) > 1:
-                    i = i[1:]
-                if i == '.':
-                    continue
-                self.versionlist.append(i)
+            i = str(i)
+            #But extra leading zeroes screw things up
+            while i.startswith('0') and len(i) > 1:
+                i = i[1:]
+            if i == '.':
+                continue
+            self.versionlist.append(i)
 
     def numpart(self,s):
         try:
