@@ -12,6 +12,8 @@ except ImportError:
     raise ImportError("This program requires the python3 requests module. Please install it using pip or your distro's package manager")
 
 DEBUG = False
+NOBAR = False
+
 default_ckan_repo = "https://github.com/KSP-CKAN/CKAN-meta/archive/master.tar.gz"
 repository_list = "https://raw.githubusercontent.com/KSP-CKAN/CKAN-meta/master/repositories.json"
 
@@ -55,7 +57,8 @@ def __download_file__(dl_data):
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
-                        sys.stdout.write('#')
+                        if not NOBAR:
+                            sys.stdout.write('#')
                         sys.stdout.flush()
                         f.write(chunk)
                 done = True

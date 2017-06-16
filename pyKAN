@@ -307,6 +307,7 @@ if __name__ == '__main__':
     parser.add_argument('--version',type=str,default=None,help='Version of the module. Use with install. Optional: default to latest compatible version.')
     parser.add_argument('--recommends',type=str,default='ask',choices=['ask','yes','no'],help='What to do with recommended mods. Default: ask.')
     parser.add_argument('--suggests',type=str,default='no',choices=['ask','yes','no'],help='What to do with suggested mods. Default: no (do not install).')
+    parser.add_argument('--nobar',action='store_true',help='Disables download progress bar')
 
 
     #Positional sub arguments
@@ -378,6 +379,7 @@ if __name__ == '__main__':
 
     options = parser.parse_args(sys.argv[1:])
     util.DEBUG=options.debug
+    util.NOBAR = options.nobar
     if isinstance(options.kspdir, str) and not options.kspdir.isdigit():
         kspdir = options.kspdir
     else:
