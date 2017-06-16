@@ -35,7 +35,7 @@ def shacheck(filename, sha, failonmissing=True):
         else:
             hashobj = hashlib.sha256(text)
         if hashobj.hexdigest().upper() !=sha.upper():
-            print('Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), sha.upper()))
+            print('Error in sha verification of %s "%s" != "%s"' %(filename, hashobj.hexdigest().upper(), sha.upper()))
             return False
     return True
 
