@@ -63,7 +63,7 @@ def __download_file__(dl_data):
                         f.write(chunk)
                 done = True
             if r.status_code != 200:
-                raise IOError("Download failed %s" %r.status_code)
+                raise IOError("Download failed for %s: %s" %(dl_data['uri'],r.status_code))
             if shacheck(filename,dl_data['sha'], False):
                 print()
                 debug("Warning: Sha hash for %s does not match repo data" % filename)
