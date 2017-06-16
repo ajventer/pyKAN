@@ -5,7 +5,7 @@ from functools import total_ordering
 
 @total_ordering
 class Version(object):
-    def __init__(self,*args):
+    def __init__(self,*args,strict=True):
         """
         >>> Version('0.0.1').versionlist
         ['0', '0', '1']
@@ -17,6 +17,7 @@ class Version(object):
         ['0', '0', '4']
 
         """
+        self.strict = strict
         versionlist = []
         if len(args) == 1 and isinstance(args[0],str):
             vstring = args[0]
@@ -75,6 +76,10 @@ class Version(object):
         if self.versionlist == other.versionlist:
             #if the contents are identical it's a definite match
             return 0
+        if not self.strict:
+            #CKAN spec v1.16 ksp_version_strict compliance
+            if self.versionlist[:-1] == other.versionlist[:-1]:
+                return 0
         if str(self) == 'any' or str(other) == 'any':
             return 0
         if len(other.versionlist) > len(self.versionlist):
