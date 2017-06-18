@@ -70,6 +70,12 @@ class Version(object):
         True
         >>> Version(0,0,5,1) > Version(0,0,5)
         True
+        >>> Version('0.4.3') < Version('0.14.3')
+        True
+        >>> Version('0.4.3', strict=True) != Version('0.4')
+        True
+        >>> Version('0.4.3', strict=False) == Version('0.4')
+        True
         """
         if not isinstance(other,Version):
             other=Version(other)
@@ -78,7 +84,7 @@ class Version(object):
             return 0
         if not self.strict:
             #CKAN spec v1.16 ksp_version_strict compliance
-            if self.versionlist[:-1] == other.versionlist[:-1]:
+            if self.versionlist[:-1] == other.versionlist:
                 return 0
         if str(self) == 'any' or str(other) == 'any':
             return 0
