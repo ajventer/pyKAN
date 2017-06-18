@@ -1,5 +1,5 @@
 #Generic datatype for version information
-from . import util
+import util
 import re
 from functools import total_ordering
 
@@ -107,9 +107,9 @@ class Version(object):
                     return 1
                 else:
                     return -1
-            if i > j:
+            if int(i) > int(j): #Use integer comparison to ensure that 14 > 4 
                 return 1
-            if i < j:
+            if int(i) < int(j):
                 return -1
         return 0
 
