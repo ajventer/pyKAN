@@ -1,11 +1,11 @@
 #Generic datatype for version information
-import util
+from . import util
 import re
 from functools import total_ordering
 
 @total_ordering
 class Version(object):
-    def __init__(self,*args,strict=True):
+    def __init__(self,strict=True,*args):
         """
         >>> Version('0.0.1').versionlist
         ['0', '0', '1']
@@ -72,10 +72,12 @@ class Version(object):
         True
         >>> Version('0.4.3') < Version('0.14.3')
         True
-        >>> Version('0.4.3', strict=True) != Version('0.4')
+        >>> Version(strict=True, '0.4.3') != Version('0.4')
         True
-        >>> Version('0.4.3', strict=False) == Version('0.4')
+        >>> Version(strict=False, '0.4.3') == Version('0.4')
         True
+        >>> Version('0.4.3') == Version('0.4')
+        False
         """
         if not isinstance(other,Version):
             other=Version(other)
@@ -107,7 +109,7 @@ class Version(object):
                     return 1
                 else:
                     return -1
-            if int(i) > int(j): #Use integer comparison to ensure that 14 > 4 
+            if int(i) > int(j): #Use integer comparison to ensure that 14 > 4
                 return 1
             if int(i) < int(j):
                 return -1
