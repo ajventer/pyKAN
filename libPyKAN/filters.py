@@ -29,16 +29,17 @@ class Filter(object):
         False
         """
         modversion = repoentry.get('ksp_version',None)
+        strictness = repoentry.get('ksp_version_strict',False)#CKAN spec v1.16 assumes that KSP version 1.3.1 == 1.3 if ksp_version_strict is not in the metadata
         if modversion:
             return modversion == 'any' or Version(modversion) >= Version(self.settings.KSPSettings['minKSPversion']) and Version(modversion) <= Version(self.settings.KSPSettings['maxKSPversion'])
         minversion = repoentry.get('ksp_version_min',None)
         maxversion = repoentry.get('ksp_version_max',None)
         if minversion and not maxversion:
-            return  Version(self.settings.KSPSettings['maxKSPversion']) >= Version(minversion)
+            return  Version(strictness,self.settings.KSPSettings['maxKSPversion']) >= Version(minversion)
         if maxversion and not minversion:
-            return Version(self.settings.KSPSettings['minKSPversion']) <= Version(maxversion)
+            return Version(strictness,self.settings.KSPSettings['minKSPversion']) <= Version(maxversion)
         if minversion and maxversion:
-            return Version(self.settings.KSPSettings['maxKSPversion']) >= Version(minversion) and Version(self.settings.KSPSettings['minKSPversion']) <= Version(maxversion)
+            return Version(strictness,self.settings.KSPSettings['maxKSPversion']) >= Version(minversion) and Version(strictness,self.settings.KSPSettings['minKSPversion']) <= Version(maxversion)
 
         #If we can't figure out compatibility - we assume yes. My first thought would be no but apparently CKAN assumes yes - which forces us to follow suit
         return True

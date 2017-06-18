@@ -5,7 +5,7 @@ from functools import total_ordering
 
 @total_ordering
 class Version(object):
-    def __init__(self,*args):
+    def __init__(self,strict=True,*args):
         """
         >>> Version('0.0.1').versionlist
         ['0', '0', '1']
@@ -17,6 +17,7 @@ class Version(object):
         ['0', '0', '4']
 
         """
+        self.strict = strict
         versionlist = []
         if len(args) == 1 and isinstance(args[0],str):
             vstring = args[0]
@@ -40,13 +41,13 @@ class Version(object):
         for i in versionlist:
                 #We need a common type for everything to get consistent comparisons
                 #Strings are the most universal and numeric ones compare fairly well.
-                i = str(i)
-                #But extra leading zeroes screw things up
-                while i.startswith('0') and len(i) > 1:
-                    i = i[1:]
-                if i == '.':
-                    continue
-                self.versionlist.append(i)
+            i = str(i)
+            #But extra leading zeroes screw things up
+            while i.startswith('0') and len(i) > 1:
+                i = i[1:]
+            if i == '.':
+                continue
+            self.versionlist.append(i)
 
     def numpart(self,s):
         try:
@@ -69,12 +70,24 @@ class Version(object):
         True
         >>> Version(0,0,5,1) > Version(0,0,5)
         True
+        >>> Version('0.4.3') < Version('0.14.3')
+        True
+        >>> Version(strict=True, '0.4.3') != Version('0.4')
+        True
+        >>> Version(strict=False, '0.4.3') == Version('0.4')
+        True
+        >>> Version('0.4.3') == Version('0.4')
+        False
         """
         if not isinstance(other,Version):
             other=Version(other)
         if self.versionlist == other.versionlist:
             #if the contents are identical it's a definite match
             return 0
+        if not self.strict:
+            #CKAN spec v1.16 ksp_version_strict compliance
+            if self.versionlist[:-1] == other.versionlist:
+                return 0
         if str(self) == 'any' or str(other) == 'any':
             return 0
         if len(other.versionlist) > len(self.versionlist):
@@ -96,9 +109,9 @@ class Version(object):
                     return 1
                 else:
                     return -1
-            if i > j:
+            if int(i) > int(j): #Use integer comparison to ensure that 14 > 4
                 return 1
-            if i < j:
+            if int(i) < int(j):
                 return -1
         return 0
 

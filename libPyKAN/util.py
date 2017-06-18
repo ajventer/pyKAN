@@ -12,6 +12,8 @@ except ImportError:
     raise ImportError("This program requires the python3 requests module. Please install it using pip or your distro's package manager")
 
 DEBUG = False
+NOBAR = False
+
 default_ckan_repo = "https://github.com/KSP-CKAN/CKAN-meta/archive/master.tar.gz"
 repository_list = "https://raw.githubusercontent.com/KSP-CKAN/CKAN-meta/master/repositories.json"
 
@@ -33,7 +35,7 @@ def shacheck(filename, sha, failonmissing=True):
         else:
             hashobj = hashlib.sha256(text)
         if hashobj.hexdigest().upper() !=sha.upper():
-            print('Error in sha verification "%s" != "%s"' %(hashobj.hexdigest().upper(), sha.upper()))
+            print('Error in sha verification of %s "%s" != "%s"' %(filename, hashobj.hexdigest().upper(), sha.upper()))
             return False
     return True
 
@@ -55,12 +57,13 @@ def __download_file__(dl_data):
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
-                        sys.stdout.write('#')
+                        if not NOBAR:
+                            sys.stdout.write('#')
                         sys.stdout.flush()
                         f.write(chunk)
                 done = True
             if r.status_code != 200:
-                raise IOError("Download failed %s" %r.status_code)
+                raise IOError("Download failed for %s: %s" %(dl_data['uri'],r.status_code))
             if shacheck(filename,dl_data['sha'], False):
                 print()
                 debug("Warning: Sha hash for %s does not match repo data" % filename)
