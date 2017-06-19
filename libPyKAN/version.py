@@ -85,6 +85,7 @@ class Version(object):
             except IndexError:
                 j = '0'
             if i == j:
+                print(i,j,'Equal')
                 continue
             if re.findall('pre|alpha|beta',i):
                 if self.numpart(i) <= self.numpart(j):
@@ -96,9 +97,17 @@ class Version(object):
                     return 1
                 else:
                     return -1
+            try:
+                i = int(i)
+                j = int(j)
+            except:
+                pass                    
             if i > j:
+                print(type(i),type(j))
+                print(i,j,'I is bigger')
                 return 1
             if i < j:
+                print(i,j,'I is smaller')
                 return -1
         return 0
 
