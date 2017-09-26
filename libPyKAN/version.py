@@ -96,11 +96,13 @@ class Version(object):
                     return 1
                 else:
                     return -1
-            try:
+            try:		
                 i = int(i)
                 j = int(j)
             except:
-                pass                    
+                #If we can't convert both, ensure both are string
+                i = str(i)
+                j = str(j)
             if i > j:
                 return 1
             if i < j:
