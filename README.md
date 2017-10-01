@@ -7,7 +7,7 @@ All the logic is kept in libraries - so that writing a new interface is easy.
 
 Version 0.1.0
 
-##Installation:
+## Installation:
 1. Clone or Download the repository.
 2. Change to the directory where you downloaded
 3. Make sure you have python-requests and python-appdirs installed. The program will tell you if it cannot find these modules.
@@ -15,7 +15,7 @@ Version 0.1.0
 5.   python pyKAN --help #On windows
 
 
-##Current features:
+## Current features:
 1. Global settings holding list of known KSP installation directories
 2. Per KSPDir settings on top of that
 3. Fetch repository data from CKAN
@@ -29,8 +29,8 @@ Version 0.1.0
 11. Upgrade modules
 12. Python3 - in master branch only.
 
-##Changes
-###0.1.0
+## Changes
+### 0.1.0
 1. The installed modules listing is now also sorted alphabetically.
 2. Fixed a bug where calling upgrade would reinstall the same version as was there before
 3. Disabled  strict mode JSON to deal with the bad json in .version files.
@@ -38,17 +38,17 @@ Version 0.1.0
 5. Fixed install destination for mods like firespittercore
 6. Use appdirs module to place main configuration file in a platform neutral manner
 
-###0.0.1-beta2
+### 0.0.1-beta2
 1. Python3 support
 2. Lots of small bugfixes
 3. Improved mod installer, mod upgrades and mod uninstalls
 4. List_module now sorts alphabetically
 
-###0.0.1-beta1
+### 0.0.1-beta1
 1. Initial public release
 
 
-##Todo:
+## Todo:
 1. PyQT GUI for graphical usage
 2. Manual install by link. User can copy a download link and have the app download and install from within. User could add/edit mod information.
 3. Optimize the O(N) and O(n*x) algorithms.
@@ -59,7 +59,8 @@ Version 0.1.0
 8. Consider documenting at all levels (package, module, class, function) using a known doc style (Plain, Epytext, restructuredText, Numpy, Google, etc.)
 9. [very optional] Consider using type hints (a.k.a PEP 484) or even the typing module (see also PEP 526) if you switch to python3.
 
-##Written By
+## Written By
 1. A.J. Venter (metalpoetza on reddit).
 2. SYZYGY - Python3 support
+
 
