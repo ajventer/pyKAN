@@ -52,7 +52,7 @@ class CkanRepo(object):
         result = {}
         for i in self.list_modules(filters,filterargs):
             if (i['identifier'] == identifier or i['name'] == identifier or identifier in i.get('provides',[])):
-                if  i['identifier'] not in result or i['version'] >= result[i['identifier']]['version']:
+                if  i['identifier'] not in result or Version(i['version']) >= Version(result[i['identifier']]['version']):
                     result[i['identifier']] = i
         return result
 
