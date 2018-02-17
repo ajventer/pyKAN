@@ -81,7 +81,7 @@ if __name__ == '__main__':
         settings.addkspdir(kspdir)
         listkspdirs('_')
 
-    def delkspdir():
+    def delkspdir(_):
         if not options.kspdir:
             util.error('You must specify --kspdir when removing a KSP directory')
         settings.delkspdir(kspdir)
