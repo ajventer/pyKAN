@@ -254,12 +254,7 @@ if __name__ == '__main__':
             MM.remove(mod)
 
     def upgradeable():
-        mods = []
-        if options.module:
-            for mod_opt in options.modules:
-                mods += [i for i in repo.find_latest(mod_opt) if i in INSTALLED.all_modnames()]
-        else:
-            mods = list(INSTALLED.all_modnames())
+        mods = list(INSTALLED.all_modnames())
         upgradeables = []
         for mod in mods:
             m = repo.find_latest(mod)
