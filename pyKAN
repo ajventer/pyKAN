@@ -398,4 +398,8 @@ if __name__ == '__main__':
         settings.reload()
         print("Using KSP Directory: ",settings.KSPDIR)
 
-    options.func(options)
+    if hasattr(options, 'func'):
+        options.func(options)
+    else:
+        parser.print_usage()
+
