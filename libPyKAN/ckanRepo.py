@@ -51,14 +51,16 @@ class CkanRepo(object):
             filters = [Filter(self.settings).compatible]
         result = {}
         for i in self.list_modules(filters,filterargs):
-            if (i['identifier'] == identifier or i['name'] == identifier or identifier in i.get('provides',[])):
+            if (i['identifier'].lower() == identifier.lower() or
+                i['name'].lower() == identifier.lower() or
+                identifier.lower() in ( x.lower() for x in i.get('provides',[]))):
                 if  i['identifier'] not in result or Version(i['version']) >= Version(result[i['identifier']]['version']):
                     result[i['identifier']] = i
         return result
 
     def find_version(self, identifier, version):
         for i in self.repodata:
-            if (self.repodata[i]['identifier'] == identifier or self.repodata[i]['name'] == identifier) and Version(self.repodata[i]['version']) == Version(version):
+            if (self.repodata[i]['identifier'].lower() == identifier.lower() or self.repodata[i]['name'].lower() == identifier.lower()) and Version(self.repodata[i]['version']) == Version(version):
                 return self.repodata[i]
         return None
 
